@@ -1,47 +1,32 @@
 package com.icure.kryptom.expo
 
+import com.icure.kryptom.crypto.AesService
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import com.icure.kryptom.crypto.defaultCryptoService
 
 class ExpoKryptomModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoKryptom')` in JavaScript.
     Name("ExpoKryptom")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
+    AsyncFunction("generateKey") Coroutine { size: Int ->
+      val key = defaultCryptoService.aes.generateKey(when (size) {
+        128 -> AesService.KeySize.AES_128
+        256 -> AesService.KeySize.AES_256
+        else -> throw IllegalArgumentException("Unsupported key size $size")
+      })
+      defaultCryptoService.aes.exportKey(key)
     }
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
+    AsyncFunction("encrypt") Coroutine { data: ByteArray, key: ByteArray, iv: ByteArray? ->
+      val loadedKey = defaultCryptoService.aes.loadKey(key)
+      defaultCryptoService.aes.encrypt(data, loadedKey, iv)
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(ExpoKryptomView::class) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { view: ExpoKryptomView, prop: String ->
-        println(prop)
-      }
+    AsyncFunction("decrypt") Coroutine { ivAndEncryptedData: ByteArray, key: ByteArray ->
+      val loadedKey = defaultCryptoService.aes.loadKey(key)
+      defaultCryptoService.aes.decrypt(ivAndEncryptedData, loadedKey)
     }
   }
 }
