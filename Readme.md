@@ -26,7 +26,13 @@ npm run open:android
 
 ### Ios
 
-First create the XCFramework using
+First initialise the icure-multiplatform-sdk submodule
+
+```bash
+git submodule update
+```
+
+then create the XCFramework using
 
 ```bash
 npm run updateIosFramework
@@ -40,12 +46,7 @@ npm run open:ios
 
 In XCode you can navigate to the swift code of the native module through `Pods/Development Pods/ExpoKryptom`
 
-To get syntax higlighting for the framework-provided functions you may need to first install the pods.
-
-```bash
-cd example/ios
-pod install
-```
+To get syntax higlighting for the framework-provided functions you may need to first run the app once, in order to properly setup the environment.
 
 #### Update the xcframework a second time
 
@@ -128,6 +129,13 @@ In this case we could fix the issue simply by replacing `s.source_files = "**/*.
 
 
 ## Running the example app
+
+Before running the app make sure to install the node dependencies under the example app.
+
+```bash
+cd example
+npm install
+```
 
 ### Android
 
