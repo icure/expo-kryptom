@@ -1,44 +1,68 @@
 import ExpoModulesCore
+//import Kryptom
 
 public class ExpoKryptomModule: Module {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
   public func definition() -> ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoKryptom')` in JavaScript.
+    //let aes = CryptoServiceKt.defaultCryptoService.aes
+
     Name("ExpoKryptom")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants([
-      "PI": Double.pi
-    ])
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-    View(ExpoKryptomView.self) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { (view: ExpoKryptomView, prop: String) in
-        print(prop)
+    AsyncFunction("generateKey") { (size: Int32, promise: Promise) in
+        promise.resolve(Data(repeating: 8, count: 16))
+        /*
+      guard size == 128 || size == 256 else {
+          promise.reject(Exception(name: "IllegalArgument", description: "Unsupported key size \(size)"))
+          return
       }
+
+      aes.generateKey(size: (size == 128) ? .aes128 : .aes256) { result, error in
+          guard let error = error else {
+            guard let result = result else {
+              fatalError("Result of key generation is null")
+            }
+            promise.resolve(result.toNSData())
+            return
+          }
+          promise.reject(error)
+      }
+         */
+    }
+
+    AsyncFunction("encrypt") { (data: Data, key: Data, iv: Data?, promise: Promise) in
+        promise.resolve(Data(repeating: 7, count: 16))
+        /*
+      let kData = NSDataUtilsKt.toByteArray(data)
+      let kKey = NSDataUtilsKt.toByteArray(key)
+      let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
+      aes.encrypt(data: kData, key: kKey, iv: kIv) { result, error in
+        guard let error = error else {
+          guard let result = result else {
+            fatalError("Result is null")
+          }
+          promise.resolve(result.toNSData())
+          return
+        }
+        promise.reject(error)
+      }
+         */
+    }
+
+    AsyncFunction("decrypt") { (ivAndEncryptedData: Data, key: Data, promise: Promise) in
+        promise.resolve(Data(repeating: 6, count: 16))
+        /*
+      let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
+      let kKey = NSDataUtilsKt.toByteArray(key)
+      aes.decrypt(ivAndEncryptedData: kData, key: kKey) { result, error in
+        guard let error = error else {
+          guard let result = result else {
+            fatalError("Result is null")
+          }
+          promise.resolve(result.toNSData())
+          return
+        }
+        promise.reject(error)
+      }
+         */
     }
   }
 }
