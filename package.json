@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "updateIosFramework": "cd icure-multiplatform-sdk && ./gradlew :kryptom:assembleKryptomReleaseXCFramework && cd .. && mkdir -p ios/Frameworks && cp -r ./icure-multiplatform-sdk/kryptom/build/XCFrameworks/release/kryptom.xcframework ios/Frameworks/kryptom.xcframework",
+    "updateIosFramework": "cd icure-multiplatform-sdk && ./gradlew :kryptom:assembleKryptomReleaseXCFramework && cd .. && mkdir -p ios/Frameworks && cp -r ./icure-multiplatform-sdk/kryptom/build/XCFrameworks/release/Kryptom.xcframework ios/Frameworks/Kryptom.xcframework",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",

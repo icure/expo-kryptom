@@ -1,15 +1,13 @@
 import ExpoModulesCore
-//import Kryptom
+import Kryptom
 
 public class ExpoKryptomModule: Module {
   public func definition() -> ModuleDefinition {
-    //let aes = CryptoServiceKt.defaultCryptoService.aes
+    let aes = CryptoServiceKt.defaultCryptoService.aes
 
     Name("ExpoKryptom")
 
     AsyncFunction("generateKey") { (size: Int32, promise: Promise) in
-        promise.resolve(Data(repeating: 8, count: 16))
-        /*
       guard size == 128 || size == 256 else {
           promise.reject(Exception(name: "IllegalArgument", description: "Unsupported key size \(size)"))
           return
@@ -25,12 +23,9 @@ public class ExpoKryptomModule: Module {
           }
           promise.reject(error)
       }
-         */
     }
 
     AsyncFunction("encrypt") { (data: Data, key: Data, iv: Data?, promise: Promise) in
-        promise.resolve(Data(repeating: 7, count: 16))
-        /*
       let kData = NSDataUtilsKt.toByteArray(data)
       let kKey = NSDataUtilsKt.toByteArray(key)
       let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
@@ -44,12 +39,9 @@ public class ExpoKryptomModule: Module {
         }
         promise.reject(error)
       }
-         */
     }
 
     AsyncFunction("decrypt") { (ivAndEncryptedData: Data, key: Data, promise: Promise) in
-        promise.resolve(Data(repeating: 6, count: 16))
-        /*
       let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
       let kKey = NSDataUtilsKt.toByteArray(key)
       aes.decrypt(ivAndEncryptedData: kData, key: kKey) { result, error in
@@ -62,7 +54,6 @@ public class ExpoKryptomModule: Module {
         }
         promise.reject(error)
       }
-         */
     }
   }
 }

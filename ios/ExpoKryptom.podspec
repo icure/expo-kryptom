@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/icure/expo-kryptom' }
   s.static_framework = true
-  # s.vendored_frameworks   NO   = 'Frameworks/kryptom.xcframework'
+  s.vendored_frameworks = 'Frameworks/Kryptom.xcframework'
 
   s.dependency 'ExpoModulesCore'
 
@@ -24,5 +24,5 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.source_files = "**/*.{h,m,swift}"
+  s.source_files = "**/*.swift"
 end
