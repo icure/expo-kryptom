@@ -137,9 +137,30 @@ cd example
 npm install
 ```
 
+And that you initialised the git submodule
+
+```bash
+git submodule update
+```
+
 ### Android
 
-Publish to maven local kryptom, update the version if needed, then run the following commands
+Publish to maven local kryptom:
+
+```bash
+cd icure-multiplatform-sdk
+./gradlew :kryptom:publishToMavenLocal
+```
+
+Find the version that you have published
+
+```
+ls ~/.m2/repository/com/icure/kryptom
+```
+
+And update the version in the `android/build.gradle` file if needed.
+
+Then run the following commands
 
 ```bash
 npm run build
