@@ -28,7 +28,28 @@ export default function App() {
           console.log("Decrypted");
           console.log(ua2b64(decrypted));
         }}
-        title="Encrypt then decrypt"
+        title="AES Encrypt then decrypt"
+      />
+
+      <Button
+        onPress={async () => {
+          const key = await ExpoKryptom.Rsa.generateKey("OaepWithSha256", 2048);
+          console.log("Got key");
+          console.log(ua2b64(key.public));
+          console.log(ua2b64(key.private));
+          console.log(key.algorithmIdentifier);
+          // const encrypted = await ExpoKryptom.Aes.encrypt(
+          //   new Uint8Array(bytes),
+          //   key,
+          //   null,
+          // );
+          // console.log("Encrypted");
+          // console.log(ua2b64(encrypted));
+          // const decrypted = await ExpoKryptom.Aes.decrypt(encrypted, key);
+          // console.log("Decrypted");
+          // console.log(ua2b64(decrypted));
+        }}
+        title="RSA Encrypt then decrypt"
       />
     </View>
   );

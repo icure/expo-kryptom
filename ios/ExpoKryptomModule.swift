@@ -1,59 +1,27 @@
 import ExpoModulesCore
-import Kryptom
 
 public class ExpoKryptomModule: Module {
-  public func definition() -> ModuleDefinition {
-    let aes = CryptoServiceKt.defaultCryptoService.aes
-
-    Name("ExpoKryptom")
-
-    AsyncFunction("generateKey") { (size: Int32, promise: Promise) in
-      guard size == 128 || size == 256 else {
-          promise.reject(Exception(name: "IllegalArgument", description: "Unsupported key size \(size)"))
-          return
-      }
-
-      aes.generateKey(size: (size == 128) ? .aes128 : .aes256) { result, error in
-          guard let error = error else {
-            guard let result = result else {
-              fatalError("Result of key generation is null")
+    public func definition() -> ModuleDefinition {
+        Name("ExpoKryptom")
+        
+        AsyncFunction("generateKeyAes") { (size: Int32, promise: Promise) in
+            guard let keySize = AesKeySize(rawValue: size) else {
+                promise.reject(Exception(name: "IllegalArgument", description: "Unsupported key size \(size)"))
+                return
             }
-            promise.resolve(result.toNSData())
-            return
-          }
-          promise.reject(error)
-      }
-    }
-
-    AsyncFunction("encrypt") { (data: Data, key: Data, iv: Data?, promise: Promise) in
-      let kData = NSDataUtilsKt.toByteArray(data)
-      let kKey = NSDataUtilsKt.toByteArray(key)
-      let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
-      aes.encrypt(data: kData, key: kKey, iv: kIv) { result, error in
-        guard let error = error else {
-          guard let result = result else {
-            fatalError("Result is null")
-          }
-          promise.resolve(result.toNSData())
-          return
+            AesKryptomWrapper.shared.generateKey(size: keySize, promise: promise)
         }
-        promise.reject(error)
-      }
-    }
-
-    AsyncFunction("decrypt") { (ivAndEncryptedData: Data, key: Data, promise: Promise) in
-      let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
-      let kKey = NSDataUtilsKt.toByteArray(key)
-      aes.decrypt(ivAndEncryptedData: kData, key: kKey) { result, error in
-        guard let error = error else {
-          guard let result = result else {
-            fatalError("Result is null")
-          }
-          promise.resolve(result.toNSData())
-          return
+        
+        AsyncFunction("encryptAes") { (data: Data, key: Data, iv: Data?, promise: Promise) in
+            AesKryptomWrapper.shared.encrypt(data: data, key: key, iv: iv, promise: promise)
         }
-        promise.reject(error)
-      }
+        
+        AsyncFunction("decryptAes") { (ivAndEncryptedData: Data, key: Data, promise: Promise) in
+            AesKryptomWrapper.shared.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key, promise: promise)
+        }
+        
+        AsyncFunction("generateKeyRsa") { (algorithmIdentifier: String, size: Int32, promise: Promise) in
+            RsaKryptomWrapper.shared.generateKey(algorithmIdentifier: algorithmIdentifier, size: size, promise: promise)
+        }
     }
-  }
 }

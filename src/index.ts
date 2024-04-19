@@ -2,23 +2,28 @@
 // and on native platforms to ExpoKryptom.ts
 import ExpoKryptomModule from "./ExpoKryptomModule";
 
-export namespace Aes {
-  export async function generateKey(size: number): Promise<Uint8Array> {
-    return ExpoKryptomModule.generateKey(size);
-  }
+const Aes = {
+  generateKey: async (size: number) => {
+    return ExpoKryptomModule.generateKeyAes(size);
+  },
+  encrypt: async (data: Uint8Array, key: Uint8Array, iv: Uint8Array | null) => {
+    return ExpoKryptomModule.encryptAes(data, key, iv);
+  },
+  decrypt: async (ivAndEncryptedData: Uint8Array, key: Uint8Array) => {
+    return ExpoKryptomModule.decryptAes(ivAndEncryptedData, key);
+  },
+};
 
-  export async function encrypt(
-    data: Uint8Array,
-    key: Uint8Array,
-    iv: Uint8Array | null,
-  ): Promise<Uint8Array> {
-    return ExpoKryptomModule.encrypt(data, key, iv);
-  }
+const Rsa = {
+  generateKey: async (algorithmIdentifier: string, size: number) => {
+    return ExpoKryptomModule.generateKeyRsa(algorithmIdentifier, size);
+  },
+  // encrypt: async (data: Uint8Array, key: Uint8Array) => {
+  //   return ExpoKryptomModule.encryptRsa(data, key);
+  // },
+  // decrypt: async (data: Uint8Array, key: Uint8Array) => {
+  //   return ExpoKryptomModule.decryptRsa(data, key);
+  // },
+};
 
-  export async function decrypt(
-    ivAndEncryptedData: Uint8Array,
-    key: Uint8Array,
-  ): Promise<Uint8Array> {
-    return ExpoKryptomModule.decrypt(ivAndEncryptedData, key);
-  }
-}
+export { Aes, Rsa };
