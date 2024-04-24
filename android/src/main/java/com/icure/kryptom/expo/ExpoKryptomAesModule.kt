@@ -8,6 +8,10 @@ class ExpoKryptomModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoKryptom")
 
+    Constants(
+      "needExports" to false
+    )
+
     AsyncFunction("generateKeyAes") Coroutine { size: Int ->
       AesService.generateKey(size = size)
     }
@@ -27,7 +31,82 @@ class ExpoKryptomModule : Module() {
       )
     }
 
-    AsyncFunction("generateKeyHmac") Coroutine { algorithmIdentifier: String ->
+    AsyncFunction("generateKeyRsa") Coroutine { algorithmIdentifier: String, size: Int ->
+      RsaService.generateKey(
+        algorithmIdentifier = algorithmIdentifier,
+        size = size
+      )
+    }
+
+    AsyncFunction("decryptRsa") Coroutine { data: ByteArray, privateKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.decrypt(
+        data = data,
+        privateKey = privateKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("encryptRsa") Coroutine { data: ByteArray, publicKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.encrypt(
+        data = data,
+        publicKey = publicKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("exportPrivateKeyJwkRsa") Coroutine { privateKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.exportPrivateKeyJwk(
+        privateKey = privateKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("exportPublicKeyJwkRsa") Coroutine { publicKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.exportPublicKeyJwk(
+        publicKey = publicKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("importPrivateKeyJwkRsa") Coroutine { privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String ->
+      RsaService.importPrivateKeyJwk(
+        privateKey = privateKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("importPublicKeyJwkRsa") Coroutine { publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String ->
+      RsaService.importPublicKeyJwk(
+        publicKey = publicKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("importKeyPairRsa") Coroutine { privateKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.importKeyPair(
+        privateKey = privateKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("signatureRsa") Coroutine { data: ByteArray, privateKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.signature(
+        data = data,
+        privateKey = privateKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+    AsyncFunction("verifyRsa") Coroutine { signature: ByteArray, data: ByteArray, publicKey: ByteArray, algorithmIdentifier: String ->
+      RsaService.verify(
+        signature = signature,
+        data = data,
+        publicKey = publicKey,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
+        AsyncFunction("generateKeyHmac") Coroutine { algorithmIdentifier: String ->
       HmacService.generateKey(algorithmIdentifier = algorithmIdentifier)
     }
 

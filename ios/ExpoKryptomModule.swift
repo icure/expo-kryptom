@@ -5,6 +5,10 @@ public class ExpoKryptomModule: Module {
     public func definition() -> ModuleDefinition {
         Name("ExpoKryptom")
         
+        Constants([
+            "needExports": true
+        ])
+        
         AsyncFunction("generateKeyAes") { (size: Int32) in
             guard let keySize = AesKeySize(rawValue: size) else {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
@@ -25,59 +29,59 @@ public class ExpoKryptomModule: Module {
             guard let keySize = RsaKeySize(rawValue: size) else {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
             }
-            return try await RsaKryptomWrapper.shared.generateKey(algorithmIdentifier: algorithmIdentifier, size: keySize)
+            return try await RsaKryptomWrapper.generateKey(algorithmIdentifier: algorithmIdentifier, size: keySize)
         }
         
         AsyncFunction("decryptRsa") { (data: Data, privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.decrypt(data: data, privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+            return try await RsaKryptomWrapper.decrypt(data: data, privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("encryptRsa") { (data: Data, publicKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.encrypt(data: data, publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+            return try await RsaKryptomWrapper.encrypt(data: data, publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("exportPrivateKeyPkcs8") { (privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.exportPrivateKeyPkcs8(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("exportPrivateKeyPkcs8Rsa") { (privateKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.exportPrivateKeyPkcs8(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("exportPrivateKeyJwk") { (privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.exportPrivateKeyJwk(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("exportPrivateKeyJwkRsa") { (privateKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.exportPrivateKeyJwk(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("exportPublicKeySpki") { (publicKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.exportPublicKeySpki(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("exportPublicKeySpkiRsa") { (publicKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.exportPublicKeySpki(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("exportPublicKeyJwk") { (publicKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.exportPublicKeyJwk(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("exportPublicKeyJwkRsa") { (publicKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.exportPublicKeyJwk(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPrivateKeyPkcs8") { (privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.importPrivateKeyPkcs8(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPrivateKeyPkcs8Rsa") { (privateKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.importPrivateKeyPkcs8(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPrivateKeyJwk") { (privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.importPrivateKeyJwk(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPrivateKeyJwkRsa") { (privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.importPrivateKeyJwk(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPublicKeySpki") { (publicKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.importPublicKeySpki(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPublicKeySpkiRsa") { (publicKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.importPublicKeySpki(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPublicKeyJwk") { (publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.importPublicKeyJwk(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPublicKeyJwkRsa") { (publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.importPublicKeyJwk(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importKeyPair") { (privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.importKeyPair(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importKeyPairRsa") { (privateKey: Data, algorithmIdentifier: String) in
+            return try await RsaKryptomWrapper.importKeyPair(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("signatureRsa") { (data: Data, privateKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.signature(data: data, privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+            return try await RsaKryptomWrapper.signature(data: data, privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("verifyRsa") { (signature: Data, data: Data, publicKey: Data, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.shared.verify(signature: signature, data: data, publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+            return try await RsaKryptomWrapper.verify(signature: signature, data: data, publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("generateKeyHmac") { (algorithmIdentifier: String) in

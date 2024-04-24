@@ -23,13 +23,10 @@ enum RsaKeySize: Int32 {
     }
 }
 
-public class RsaKryptomWrapper {
-    static let shared = RsaKryptomWrapper()
-    private let rsa = CryptoServiceKt.defaultCryptoService.rsa
+public struct RsaKryptomWrapper {
+    private static let rsa = CryptoServiceKt.defaultCryptoService.rsa
     
-    private init() { }
-    
-    func generateKey(algorithmIdentifier: String, size: RsaKeySize) async throws -> [String: Any] {
+    static func generateKey(algorithmIdentifier: String, size: RsaKeySize) async throws -> [String: Any] {
         let algorithm: RsaAlgorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         
         let generatedKeyPair = try await rsa.generateKeyPair(algorithm: algorithm, keySize: size.toRsaServiceKeySize())
@@ -37,7 +34,7 @@ public class RsaKryptomWrapper {
         return mapKeyPairToDictonary(keyPair: generatedKeyPair)
     }
     
-    func decrypt(data: Data, privateKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func decrypt(data: Data, privateKey: Data, algorithmIdentifier: String) async throws -> Data {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
                 
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
@@ -48,7 +45,7 @@ public class RsaKryptomWrapper {
         return decryptedData.toNSData()
     }
     
-    func encrypt(data: Data, publicKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func encrypt(data: Data, publicKey: Data, algorithmIdentifier: String) async throws -> Data {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
                 
         let mappedRawKey = NSDataUtilsKt.toByteArray(publicKey)
@@ -57,7 +54,7 @@ public class RsaKryptomWrapper {
         return try await rsa.encrypt(data: NSDataUtilsKt.toByteArray(data), publicKey: mappedPublicRsaKey).toNSData()
     }
     
-    func exportPrivateKeyPkcs8(privateKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func exportPrivateKeyPkcs8(privateKey: Data, algorithmIdentifier: String) async throws -> Data {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
         let loadedPrivateKey = PrivateRsaKey(rawKey: mappedRawKey, algorithm: algorithm).dropTypeInfo()
@@ -65,29 +62,17 @@ public class RsaKryptomWrapper {
         return try await rsa.exportPrivateKeyPkcs8(key: loadedPrivateKey).toNSData()
     }
     
-    func exportPrivateKeyJwk(privateKey: Data, algorithmIdentifier: String) async throws -> ExportPrivateRsaKeyJwk {
+    static func exportPrivateKeyJwk(privateKey: Data, algorithmIdentifier: String) async throws -> ExportPrivateRsaKeyJwk {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
         let loadedPrivateKey = PrivateRsaKey(rawKey: mappedRawKey, algorithm: algorithm).dropTypeInfo()
         
         let exportedPrivateKey = try await rsa.exportPrivateKeyJwk(key: loadedPrivateKey)
         
-        return ExportPrivateRsaKeyJwk(
-            alg: Field(wrappedValue: exportedPrivateKey.alg),
-            d: Field(wrappedValue: exportedPrivateKey.d),
-            dp: Field(wrappedValue: exportedPrivateKey.dp),
-            dq: Field(wrappedValue: exportedPrivateKey.dq),
-            e: Field(wrappedValue: exportedPrivateKey.e),
-            ext: Field(wrappedValue: exportedPrivateKey.ext),
-            key_ops: Field(wrappedValue: Array(exportedPrivateKey.key_ops)),
-            n: Field(wrappedValue: exportedPrivateKey.n),
-            p: Field(wrappedValue: exportedPrivateKey.p),
-            q: Field(wrappedValue: exportedPrivateKey.q),
-            qi: Field(wrappedValue: exportedPrivateKey.qi)
-        )
+        return ExportPrivateRsaKeyJwk.fromPrivateRsaKeyJwk(privateKey: exportedPrivateKey)
     }
     
-    func exportPublicKeySpki(publicKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func exportPublicKeySpki(publicKey: Data, algorithmIdentifier: String) async throws -> Data {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedPublicKey = NSDataUtilsKt.toByteArray(publicKey)
         let loadedPublicKey = PublicRsaKey(rawKey: mappedPublicKey, algorithm: algorithm).dropTypeInfo()
@@ -95,58 +80,52 @@ public class RsaKryptomWrapper {
         return try await rsa.exportPublicKeySpki(key: loadedPublicKey).toNSData()
     }
     
-    func exportPublicKeyJwk(publicKey: Data, algorithmIdentifier: String) async throws -> ExportPublicRsaKeyJwk {
+    static func exportPublicKeyJwk(publicKey: Data, algorithmIdentifier: String) async throws -> ExportPublicRsaKeyJwk {
         let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedPublicKey = NSDataUtilsKt.toByteArray(publicKey)
         let loadedPublicKey = PublicRsaKey(rawKey: mappedPublicKey, algorithm: algorithm).dropTypeInfo()
         
         let exportedPublicKey = try await rsa.exportPublicKeyJwk(key: loadedPublicKey)
         
-        return ExportPublicRsaKeyJwk(
-            alg: Field(wrappedValue: exportedPublicKey.alg),
-            e: Field(wrappedValue: exportedPublicKey.e),
-            ext: Field(wrappedValue: exportedPublicKey.ext),
-            key_ops: Field(wrappedValue: Array(exportedPublicKey.key_ops)),
-            n: Field(wrappedValue: exportedPublicKey.n)
-        )
+        return ExportPublicRsaKeyJwk.fromPublicKeyRsaKeyJwk(publicKey: exportedPublicKey)
     }
     
-    func importPrivateKeyPkcs8(privateKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func importPrivateKeyPkcs8(privateKey: Data, algorithmIdentifier: String) async throws -> [String: Any] {
         let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let importedPrivateKey = try await rsa.loadPrivateKeyPkcs8(algorithm: algorithm, privateKeyPkcs8: NSDataUtilsKt.toByteArray(privateKey))
         
-        return importedPrivateKey.rawKey.toNSData()
+        return mapPrivateKeyToDictionnary(privateKey: importedPrivateKey)
     }
     
-    func importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) async throws -> Data {
+    static func importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) async throws -> [String: Any] {
         let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let importedPrivateKey = try await rsa.loadPrivateKeyJwk(algorithm: algorithm, privateKeyJwk: privateKey.toPrivateRsaKeyJwk())
         
-        return importedPrivateKey.rawKey.toNSData()
+        return mapPrivateKeyToDictionnary(privateKey: importedPrivateKey)
     }
     
-    func importPublicKeySpki(publicKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func importPublicKeySpki(publicKey: Data, algorithmIdentifier: String) async throws -> [String: Any] {
         let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let importedPublicKey = try await rsa.loadPublicKeySpki(algorithm: algorithm, publicKeySpki: NSDataUtilsKt.toByteArray(publicKey))
         
-        return importedPublicKey.rawKey.toNSData()
+        return mapPublicKeyToDictionnary(publicKey: importedPublicKey)
     }
     
-    func importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) async throws -> Data {
+    static func importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) async throws -> [String: Any] {
         let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let importedPublicKey = try await rsa.loadPublicKeyJwk(algorithm: algorithm, publicKeyJwk: publicKey.toPublicRsaKeyJwk())
         
-        return importedPublicKey.rawKey.toNSData()
+        return mapPublicKeyToDictionnary(publicKey: importedPublicKey)
     }
     
-    func importKeyPair(privateKey: Data, algorithmIdentifier: String) async throws -> [String: Any] {
+    static func importKeyPair(privateKey: Data, algorithmIdentifier: String) async throws -> [String: Any] {
         let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let importedKeyPair = try await rsa.loadKeyPairPkcs8(algorithm: algorithm, privateKeyPkcs8: NSDataUtilsKt.toByteArray(privateKey))
         
         return mapKeyPairToDictonary(keyPair: importedKeyPair)
     }
     
-    func verify(signature: Data, data: Data, publicKey: Data, algorithmIdentifier: String) async throws -> Bool {
+    static func verify(signature: Data, data: Data, publicKey: Data, algorithmIdentifier: String) async throws -> Bool {
         let algorithm = try RsaAlgorithmRsaSignatureAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(publicKey)
         let mappedPublicRsaKey = PublicRsaKey(rawKey: mappedRawKey, algorithm: algorithm)
@@ -154,7 +133,7 @@ public class RsaKryptomWrapper {
         return try await rsa.verifySignature(signature: NSDataUtilsKt.toByteArray(signature), data: NSDataUtilsKt.toByteArray(data), publicKey: mappedPublicRsaKey).boolValue
     }
     
-    func signature(data: Data, privateKey: Data, algorithmIdentifier: String) async throws -> Data {
+    static func signature(data: Data, privateKey: Data, algorithmIdentifier: String) async throws -> Data {
         let algorithm = try RsaAlgorithmRsaSignatureAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
         let mappedPrivateRsaKey = PrivateRsaKey(rawKey: mappedRawKey, algorithm: algorithm)
@@ -162,11 +141,25 @@ public class RsaKryptomWrapper {
         return try await rsa.sign(data: NSDataUtilsKt.toByteArray(data), privateKey: mappedPrivateRsaKey).toNSData()
     }
     
-    private func mapKeyPairToDictonary(keyPair: RsaKeypair<RsaAlgorithm>) -> [String: Any] {
+    private static func mapKeyPairToDictonary(keyPair: RsaKeypair<RsaAlgorithm>) -> [String: Any] {
         return [
             "private": keyPair.private_.rawKey.toNSData(),
             "public": keyPair.public_.rawKey.toNSData(),
             "algorithmIdentifier": keyPair.algorithm.identifier
+        ]
+    }
+    
+    private static func mapPublicKeyToDictionnary(publicKey: PublicRsaKey<RsaAlgorithm>) -> [String: Any] {
+        return [
+            "public": publicKey.rawKey.toNSData(),
+            "algorithmIdentifier": publicKey.algorithm.identifier
+        ]
+    }
+    
+    private static func mapPrivateKeyToDictionnary(privateKey: PrivateRsaKey<RsaAlgorithm>) -> [String: Any] {
+        return [
+            "private": privateKey.rawKey.toNSData(),
+            "algorithmIdentifier": privateKey.algorithm.identifier
         ]
     }
 }
