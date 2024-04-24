@@ -1,4 +1,4 @@
-import { Aes, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair } from "expo-kryptom";
+import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac } from "expo-kryptom";
 import { useReducer, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 
@@ -9,7 +9,7 @@ function ua2b64(ua: Uint8Array) {
   return Buffer.from(ua).toString("base64");
 }
 
-type State = {
+type RsaState = {
   status: 'NOT_INITIALIZED',
 } | {
   status: 'INITIALIZED',
@@ -18,7 +18,7 @@ type State = {
   algorithmIdentifier: RsaAlgorithm,
 };
 
-const initial: State = {
+const initial: RsaState = {
   status: 'NOT_INITIALIZED',
 };
 
@@ -27,7 +27,7 @@ type RsaAction = {
   key: RsaKeyPair,
 }
 
-function reducer(state: State, action: RsaAction): State {
+function rsaReducer(state: RsaState, action: RsaAction): RsaState {
   switch (action.type) {
     case "initialize":
       return {
@@ -42,15 +42,42 @@ function reducer(state: State, action: RsaAction): State {
   }
 }
 
+type HmacState = {
+  status: 'NOT_INITIALIZED',
+} | {
+  status: 'INITIALIZED',
+  keydata: HmacKey
+}
+
+type HmacAction = {
+  type: "initialize",
+  keydata: HmacKey,
+}
+
+function hmacReducer(state: HmacState, action: HmacAction): HmacState {
+  switch (action.type) {
+    case "initialize":
+      return {
+        ...state,
+        status: 'INITIALIZED',
+        keydata: action.keydata,
+      };
+    default:
+      throw new Error("Invalid action type");
+  }
+}
+
 export default function App() {
 
-  const [rsaEncryptionState, rsaEncryptionDispatch] = useReducer(reducer, initial as State);
-  const [rsaSignatureState, rsaSignatureDispatch] = useReducer(reducer, initial as State);
+  const [rsaEncryptionState, rsaEncryptionDispatch] = useReducer(rsaReducer, initial as RsaState);
+  const [rsaSignatureState, rsaSignatureDispatch] = useReducer(rsaReducer, initial as RsaState);
 
   const [privateKeyJwk, setPrivateKeyJwk] = useState<PrivateRsaKeyJwk | undefined>(undefined);
   const [publicKeyJwk, setPublicKeyJwk] = useState<PublicRsaKeyJwk | undefined>(undefined);
   const [privateKeyPkcs8, setPrivateKeyPkcs8] = useState<Uint8Array | undefined>(undefined);
   const [publicKeySpki, setPublicKeySpki] = useState<Uint8Array | undefined>(undefined);
+
+  const [hmacState, hmacDispatch] = useReducer(hmacReducer, { status: 'NOT_INITIALIZED' } as HmacState);
 
   return (
     <View style={styles.container}>
@@ -273,6 +300,50 @@ export default function App() {
               })
             }}
             title="Generate RSA Encryption key"
+          />
+        </>
+      )}
+
+      {hmacState.status === 'INITIALIZED' ? (
+        <>
+          <Button
+            onPress={async () => {
+              if (hmacState.status !== 'INITIALIZED') {
+                Alert.alert("Key not initialized");
+                return;
+              }
+
+              const signature = await Hmac.sign(
+                new Uint8Array(bytes),
+                hmacState.keydata
+              );
+              console.log("Signature");
+              console.log(ua2b64(signature));
+
+              const verified = await Hmac.verify(
+                signature,
+                new Uint8Array(bytes),
+                hmacState.keydata
+              );
+              console.log("Verified");
+              console.log(verified);
+            }}
+            title="HMAC Sign then verify"
+          />
+        </>
+      ) : (
+        <>
+          <Button
+            onPress={async () => {
+              const key = await Hmac.generateKey("HmacSha512");
+              console.log("Got key");
+              console.log(ua2b64(key.key));
+              hmacDispatch({
+                type: "initialize",
+                keydata: key,
+              });
+            }}
+            title="Generate HMAC key"
           />
         </>
       )}

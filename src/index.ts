@@ -59,14 +59,32 @@ export const Rsa = {
   },
 };
 
+export const Hmac = {
+  generateKey: async (algorithmIdentifier: HmacAlgorithm) => {
+    return await ExpoKryptomModule.generateKeyHmac(algorithmIdentifier) as HmacKey;
+  },
+  sign: async (data: Uint8Array, key: { key: Uint8Array, algorithmIdentifier: HmacAlgorithm }) => {
+    return await ExpoKryptomModule.signHmac(key.algorithmIdentifier, key.key, data) as Uint8Array;
+  },
+  verify: async (signature: Uint8Array, data: Uint8Array, key: { key: Uint8Array, algorithmIdentifier: HmacAlgorithm }) => {
+    return await ExpoKryptomModule.verifyHmac(key.algorithmIdentifier, key.key, signature, data) as boolean;
+  },
+}
+
 export type RsaEncryptionAlgorithm = "OaepWithSha1" | "OaepWithSha256";
 export type RsaSignatureAlgorithm = "PssWithSha256";
 export type RsaAlgorithm = RsaEncryptionAlgorithm | RsaSignatureAlgorithm
+export type HmacAlgorithm = "HmacSha512"
 
 export type RsaKeyPair = {
   public: Uint8Array;
   private: Uint8Array;
   algorithmIdentifier: RsaAlgorithm;
+};
+
+export type HmacKey = {
+  key: Uint8Array;
+  algorithmIdentifier: HmacAlgorithm;
 };
 
 export type PrivateRsaKeyJwk = {

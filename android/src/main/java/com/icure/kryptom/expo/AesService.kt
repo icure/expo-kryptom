@@ -7,8 +7,8 @@ object AesService {
     suspend fun generateKey(size: Int): ByteArray = defaultCryptoService.aes.exportKey(
         defaultCryptoService.aes.generateKey(
             when (size) {
-                128 -> AesService.KeySize.AES_128
-                256 -> AesService.KeySize.AES_256
+                128 -> AesService.KeySize.Aes128
+                256 -> AesService.KeySize.Aes256
                 else -> throw IllegalArgumentException("Unsupported key size $size")
             }
         )

@@ -8,11 +8,11 @@ class ExpoKryptomModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoKryptom")
 
-    AsyncFunction("generateKey") Coroutine { size: Int ->
+    AsyncFunction("generateKeyAes") Coroutine { size: Int ->
       AesService.generateKey(size = size)
     }
 
-    AsyncFunction("encrypt") Coroutine { data: ByteArray, key: ByteArray, iv: ByteArray? ->
+    AsyncFunction("encryptAes") Coroutine { data: ByteArray, key: ByteArray, iv: ByteArray? ->
       AesService.encrypt(
         data = data,
         key = key,
@@ -20,10 +20,31 @@ class ExpoKryptomModule : Module() {
       )
     }
 
-    AsyncFunction("decrypt") Coroutine { ivAndEncryptedData: ByteArray, key: ByteArray ->
+    AsyncFunction("decryptAes") Coroutine { ivAndEncryptedData: ByteArray, key: ByteArray ->
       AesService.decrypt(
         ivAndEncryptedData = ivAndEncryptedData,
         key = key
+      )
+    }
+
+    AsyncFunction("generateKeyHmac") Coroutine { algorithmIdentifier: String ->
+      HmacService.generateKey(algorithmIdentifier = algorithmIdentifier)
+    }
+
+    AsyncFunction("signHmac") Coroutine { algorithmIdentifier: String, key: ByteArray, data: ByteArray ->
+      HmacService.sign(
+        algorithmIdentifier = algorithmIdentifier,
+        key = key,
+        data = data
+      )
+    }
+
+    AsyncFunction("verifyHmac") Coroutine { algorithmIdentifier: String, key: ByteArray, signature: ByteArray, data: ByteArray ->
+      HmacService.verify(
+        algorithmIdentifier = algorithmIdentifier,
+        key = key,
+        signature = signature,
+        data = data
       )
     }
   }
