@@ -1,5 +1,7 @@
 import { Aes, Hmac, Rsa } from "expo-kryptom"
 
+const Buffer = require("buffer").Buffer;
+
 const data = "The quick brown fox jumps over the lazy dog"
 const dataBytes = new Uint8Array(Buffer.from(data, "utf-8"))
 const aesKey = "vNImq6i5ff6Y8UhhqhyGWw=="
@@ -35,8 +37,6 @@ const hmacKey = "E8Kij04n2hg/j3y/d7M8RRmQLQHA+oCR7Uldec/f+kZH17nE0i7haenaM8tFrUl
     "cTtfImZZD67uaIt30UkoMUQqOb62oR3cQ/fdWgIZTMk811HfE91UweqfalT6kAg5yh5wTc+xY5FGkLk="
 const hmacSignature = "mCU9EWH5nXV58sDhUGfKYT45UGU5D3LyTtmsVqcobnbui2cg2e/muzegtDR3x5amAyb+4tpXXXPh/3M7ngblZA=="
 
-const Buffer = require("buffer").Buffer;
-
 function b64_2ua(b64: string) {
     return new Uint8Array(Buffer.from(b64, "base64"));
 }  
@@ -54,3 +54,4 @@ export async function testExpoKryptom() {
     if (!await Rsa.verify(b64_2ua(rsaSigned), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
     if (!await Hmac.verify(b64_2ua(hmacSignature), dataBytes, { key: b64_2ua(hmacKey), algorithmIdentifier: "HmacSha512" })) throw new Error("HMAC verification failed")
 }
+
