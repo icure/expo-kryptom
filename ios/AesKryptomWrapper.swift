@@ -21,52 +21,29 @@ public class AesKryptomWrapper {
     
     private init() { }
     
-    func generateKey(size: AesKeySize, promise: Promise) {
+    func generateKey(size: AesKeySize) async throws -> Data {
         let keySize = size.toAesServiceKeySize()
-        aes.generateKey(size: keySize) { result, error in
-            if let generateKeyError = error {
-                promise.reject(generateKeyError)
-                return
-            }
-            
-            guard let result = result else {
-                fatalError("Result is null")
-            }
-            
-            promise.resolve(result.toNSData())
-        }
+        let aesKey = try await aes.generateKey(size: keySize)
+        
+        print("Generated")
+        
+        return aesKey.toNSData()
     }
     
-    func encrypt(data: Data, key: Data, iv: Data?, promise: Promise) {
+    func encrypt(data: Data, key: Data, iv: Data?) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(data)
         let kKey = NSDataUtilsKt.toByteArray(key)
         let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
-        aes.encrypt(data: kData, key: kKey, iv: kIv) { result, error in
-            if let encryptError = error {
-                promise.reject(encryptError)
-                return
-            }
-            
-            guard let result = result else {
-                fatalError("Result is null")
-            }
-            promise.resolve(result.toNSData())
-        }
+        let encryptedData = try await aes.encrypt(data: kData, key: kKey, iv: kIv)
+        
+        return encryptedData.toNSData()
     }
     
-    func decrypt(ivAndEncryptedData: Data, key: Data, promise: Promise) {
+    func decrypt(ivAndEncryptedData: Data, key: Data) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
         let kKey = NSDataUtilsKt.toByteArray(key)
-        aes.decrypt(ivAndEncryptedData: kData, key: kKey) { result, error in
-            if let decryptError = error {
-                promise.reject(decryptError)
-                return
-            }
-            
-            guard let result = result else {
-                fatalError("Result is null")
-            }
-            promise.resolve(result.toNSData())
-        }
+        let decryptedData = try await aes.decrypt(ivAndEncryptedData: kData, key: kKey)
+        
+        return decryptedData.toNSData()
     }
 }
