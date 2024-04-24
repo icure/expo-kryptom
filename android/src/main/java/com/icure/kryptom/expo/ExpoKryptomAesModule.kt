@@ -47,5 +47,17 @@ class ExpoKryptomModule : Module() {
         data = data
       )
     }
+
+    AsyncFunction("sha256") Coroutine { data: ByteArray ->
+      DigestService.sha256(data)
+    }
+
+    Function("randomBytes") { length: Int ->
+      StrongRandom.randomBytes(length)
+    }
+
+    Function("randomUUID") {
+      StrongRandom.randomUUID()
+    }
   }
 }

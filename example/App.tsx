@@ -1,4 +1,4 @@
-import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac } from "expo-kryptom";
+import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac, StrongRandom, Digest } from "expo-kryptom";
 import { useReducer, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 
@@ -347,6 +347,30 @@ export default function App() {
           />
         </>
       )}
+      <Button
+        onPress={async () => {
+          const digest = await Digest.sha256(new Uint8Array(bytes));
+          console.log("Sha256");
+          console.log(ua2b64(digest));
+        }}
+        title="Sha256"
+      />
+      <Button
+        onPress={() => {
+          const random = StrongRandom.randomBytes(10);
+          console.log("Random bytes");
+          console.log(ua2b64(random));
+        }}
+        title="10 random byes"
+      />
+      <Button
+        onPress={async () => {
+          const uuid = StrongRandom.randomUUID();
+          console.log("Random UUID");
+          console.log(uuid);
+        }}
+        title="Random UUID"
+      />
     </View>
   );
 }

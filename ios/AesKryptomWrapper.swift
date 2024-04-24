@@ -15,13 +15,10 @@ enum AesKeySize: Int32 {
     }
 }
 
-public class AesKryptomWrapper {
-    static let shared = AesKryptomWrapper()
-    private let aes = CryptoServiceKt.defaultCryptoService.aes
+public struct AesKryptomWrapper {
+    private static let aes = CryptoServiceKt.defaultCryptoService.aes
     
-    private init() { }
-    
-    func generateKey(size: AesKeySize) async throws -> Data {
+    static func generateKey(size: AesKeySize) async throws -> Data {
         let keySize = size.toAesServiceKeySize()
         let aesKey = try await aes.generateKey(size: keySize)
         
@@ -30,7 +27,7 @@ public class AesKryptomWrapper {
         return aesKey.toNSData()
     }
     
-    func encrypt(data: Data, key: Data, iv: Data?) async throws -> Data {
+    static func encrypt(data: Data, key: Data, iv: Data?) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(data)
         let kKey = NSDataUtilsKt.toByteArray(key)
         let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
@@ -39,7 +36,7 @@ public class AesKryptomWrapper {
         return encryptedData.toNSData()
     }
     
-    func decrypt(ivAndEncryptedData: Data, key: Data) async throws -> Data {
+    static func decrypt(ivAndEncryptedData: Data, key: Data) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
         let kKey = NSDataUtilsKt.toByteArray(key)
         let decryptedData = try await aes.decrypt(ivAndEncryptedData: kData, key: kKey)

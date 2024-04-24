@@ -10,15 +10,15 @@ public class ExpoKryptomModule: Module {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
             }
             
-            return try await AesKryptomWrapper.shared.generateKey(size: keySize)
+            return try await AesKryptomWrapper.generateKey(size: keySize)
         }
         
         AsyncFunction("encryptAes") { (data: Data, key: Data, iv: Data?) in
-            return try await AesKryptomWrapper.shared.encrypt(data: data, key: key, iv: iv)
+            return try await AesKryptomWrapper.encrypt(data: data, key: key, iv: iv)
         }
         
         AsyncFunction("decryptAes") { (ivAndEncryptedData: Data, key: Data) in
-            return try await AesKryptomWrapper.shared.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key)
+            return try await AesKryptomWrapper.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key)
         }
         
         AsyncFunction("generateKeyRsa") { (algorithmIdentifier: String, size: Int32) in
@@ -81,15 +81,27 @@ public class ExpoKryptomModule: Module {
         }
         
         AsyncFunction("generateKeyHmac") { (algorithmIdentifier: String) in
-            return try await HmacKryptomWrapper.shared.generateKey(algorithmIdentifier: algorithmIdentifier)
+            return try await HmacKryptomWrapper.generateKey(algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("verifyHmac") { (algorithmIdentifier: String, key: Data, signature: Data, data: Data) in
-            return try await HmacKryptomWrapper.shared.verify(algorithmIdentifier: algorithmIdentifier, key: key, signature: signature, data: data)
+            return try await HmacKryptomWrapper.verify(algorithmIdentifier: algorithmIdentifier, key: key, signature: signature, data: data)
         }
         
         AsyncFunction("signHmac") { (algorithmIdentifier: String, key: Data, data: Data) in
-            return try await HmacKryptomWrapper.shared.sign(algorithmIdentifier: algorithmIdentifier, key: key, data: data)
+            return try await HmacKryptomWrapper.sign(algorithmIdentifier: algorithmIdentifier, key: key, data: data)
+        }
+        
+        AsyncFunction("sha256") { (data: Data) in
+            return try await DigestKryptomWrapper.sha256(data: data)
+        }
+        
+        Function("randomUUID") { () in
+            return StrongRandomKryptomWrapper.randomUUID()
+        }
+        
+        Function("randomBytes") { (length: Int32) in
+            return StrongRandomKryptomWrapper.randomBytes(length: length)
         }
     }
 }

@@ -71,6 +71,21 @@ export const Hmac = {
   },
 }
 
+export const StrongRandom = {
+  randomBytes: (length: number) => {
+    return ExpoKryptomModule.randomBytes(length) as Uint8Array;
+  },
+  randomUUID: () => {
+    return ExpoKryptomModule.randomUUID() as string;
+  },
+}
+
+export const Digest = {
+  sha256: async (data: Uint8Array) => {
+    return await ExpoKryptomModule.sha256(data) as Uint8Array;
+  },
+}
+
 export type RsaEncryptionAlgorithm = "OaepWithSha1" | "OaepWithSha256";
 export type RsaSignatureAlgorithm = "PssWithSha256";
 export type RsaAlgorithm = RsaEncryptionAlgorithm | RsaSignatureAlgorithm
