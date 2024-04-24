@@ -89,5 +89,5 @@ repositories {
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation 'com.icure:kryptom-android:0.1.94-feature.kryptom-exportability.ga994b922e2' // TODO this is in maven local
+  implementation 'com.icure:kryptom-android:0.0.0-dev' // TODO this is in maven local
 }

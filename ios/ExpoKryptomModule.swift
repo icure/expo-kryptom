@@ -79,5 +79,17 @@ public class ExpoKryptomModule: Module {
         AsyncFunction("verifyRsa") { (signature: Data, data: Data, publicKey: Data, algorithmIdentifier: String) in
             return try await RsaKryptomWrapper.shared.verify(signature: signature, data: data, publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
+        
+        AsyncFunction("generateKeyHmac") { (algorithmIdentifier: String) in
+            return try await HmacKryptomWrapper.shared.generateKey(algorithmIdentifier: algorithmIdentifier)
+        }
+        
+        AsyncFunction("verifyHmac") { (algorithmIdentifier: String, key: Data, signature: Data, data: Data) in
+            return try await HmacKryptomWrapper.shared.verify(algorithmIdentifier: algorithmIdentifier, key: key, signature: signature, data: data)
+        }
+        
+        AsyncFunction("signHmac") { (algorithmIdentifier: String, key: Data, data: Data) in
+            return try await HmacKryptomWrapper.shared.sign(algorithmIdentifier: algorithmIdentifier, key: key, data: data)
+        }
     }
 }
