@@ -339,6 +339,18 @@ export default function App() {
         }}
         title="Random UUID"
       />
+      <Button
+        onPress={async () => {
+          try {
+            await Rsa.generateKey("ThisAlgorithmDoesNotExist", 2048)
+            console.log("Success - this should not happen")
+          } catch (e) {
+            console.log("Failed to generate key (as expected)") 
+            console.log((e as Error).message)
+          }
+        }}
+        title="Generate key with wrong algorithm"
+      />
     </View>
   );
 }
