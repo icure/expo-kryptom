@@ -1,6 +1,7 @@
 import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac, StrongRandom, Digest } from "expo-kryptom";
 import { useReducer, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { testExpoKryptom } from "./Test";
 
 const Buffer = require("buffer").Buffer;
 const bytes = [0x3a, 0x13, 0x68, 0x1a, 0x8a, 0xe2, 0x96, 0x50];
@@ -350,6 +351,13 @@ export default function App() {
           }
         }}
         title="Generate key with wrong algorithm"
+      />
+      <Button
+        onPress={async () => {
+          await testExpoKryptom()
+          console.log("Everything works!")
+        }}
+        title="Run tests"
       />
     </View>
   );
