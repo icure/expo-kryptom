@@ -20,7 +20,7 @@ public struct HmacKryptomWrapper {
  
     private static func mapKeyToDictonary(key: HmacKey<any HmacAlgorithm>) -> [String: Any] {
         return [
-            "key": key.rawKey.toNSData(),
+            "rawKey": key.rawKey.toNSData(),
             "algorithmIdentifier": key.algorithm.identifier
         ]
     }

@@ -81,9 +81,9 @@ export default function App() {
       <Text>{ua2b64(new Uint8Array(bytes))}</Text>
       <Button
         onPress={async () => {
-          const key = await Aes.generateKey(256);
+          const key = await Aes.generateKey("AesCbcPkcs7", 256);
           console.log("Got key");
-          console.log(ua2b64(key));
+          console.log(JSON.stringify(key));
           const encrypted = await Aes.encrypt(
             new Uint8Array(bytes),
             key,
@@ -306,7 +306,7 @@ export default function App() {
             onPress={async () => {
               const key = await Hmac.generateKey("HmacSha512");
               console.log("Got key");
-              console.log(ua2b64(key.key));
+              console.log(JSON.stringify(key));
               hmacDispatch({
                 type: "initialize",
                 keydata: key,

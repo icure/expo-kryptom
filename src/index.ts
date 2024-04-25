@@ -2,15 +2,28 @@
 // and on native platforms to ExpoKryptom.ts
 import ExpoKryptomModule from "./ExpoKryptomModule";
 
+const rsaKeyNeedsExport = ExpoKryptomModule.rsaKeyNeedsExport;
+
 export const Aes = {
-  generateKey: async (size: number) => {
-    return await ExpoKryptomModule.generateKeyAes(size) as Uint8Array;
+  generateKey: async (algorithmIdentifier: AesAlgorithm, size: number): Promise<AesKey> => {
+    return await ExpoKryptomModule.generateKeyAes(algorithmIdentifier,size);
   },
-  encrypt: async (data: Uint8Array, key: Uint8Array, iv: Uint8Array | null) => {
-    return ExpoKryptomModule.encryptAes(data, key, iv) as Uint8Array;
+  encrypt: async (data: Uint8Array, key: AesKey, iv: Uint8Array | null): Promise<Uint8Array> => {
+    return await ExpoKryptomModule.encryptAes(data, (key as NativeAesKey).rawKey, key.algorithmIdentifier, iv);
   },
-  decrypt: async (ivAndEncryptedData: Uint8Array, key: Uint8Array) => {
-    return await ExpoKryptomModule.decryptAes(ivAndEncryptedData, key) as Uint8Array;
+  decrypt: async (ivAndEncryptedData: Uint8Array, key: AesKey): Promise<Uint8Array> => {
+    return await ExpoKryptomModule.decryptAes(ivAndEncryptedData, (key as NativeAesKey).rawKey, key.algorithmIdentifier);
+  },
+  exportRawKey: async (key: AesKey): Promise<Uint8Array> => {
+    return (key as NativeAesKey).rawKey;
+  },
+  importRawKey: async (rawKey: Uint8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey> => {
+    // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
+    const res: NativeAesKey = {
+      rawKey,
+      algorithmIdentifier
+    }
+    return res;
   },
 };
 
@@ -33,7 +46,7 @@ export const Rsa = {
     ) as Uint8Array;
   },
   exportPrivateKeyPkcs8: async (key: RsaPrivateKey) => {
-    if (ExpoKryptomModule.needExports) {
+    if (rsaKeyNeedsExport) {
       return await ExpoKryptomModule.exportPrivateKeyPkcs8Rsa(
         (key as NativeRsaPrivateKey).private,
         key.algorithmIdentifier
@@ -48,7 +61,7 @@ export const Rsa = {
     ) as PrivateRsaKeyJwk;
   },
   exportPublicKeySpki: async (key: RsaPublicKey) => {
-    if (ExpoKryptomModule.needExports) {
+    if (rsaKeyNeedsExport) {
       return await ExpoKryptomModule.exportPublicKeySpkiRsa(
         (key as NativeRsaPublicKey).public,
         key.algorithmIdentifier
@@ -63,9 +76,10 @@ export const Rsa = {
     ) as PublicRsaKeyJwk;
   },
   importPrivateKeyPkcs8: async (privateKeyPkcs8: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey> => {
-    if (ExpoKryptomModule.needExports) {
+    if (rsaKeyNeedsExport) {
       return await ExpoKryptomModule.importPrivateKeyPkcs8Rsa(privateKeyPkcs8, algorithmIdentifier);
     }
+    // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeRsaPrivateKey = {
       private: privateKeyPkcs8,
       algorithmIdentifier
@@ -76,9 +90,10 @@ export const Rsa = {
     return await ExpoKryptomModule.importPrivateKeyJwkRsa(privateKey, algorithmIdentifier) as RsaPrivateKey;
   },
   importPublicKeySpki: async (publicKeySpki: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey> => {
-    if (ExpoKryptomModule.needExports) {
+    if (rsaKeyNeedsExport) {
       return await ExpoKryptomModule.importPublicKeySpkiRsa(publicKeySpki, algorithmIdentifier);
     }
+    // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeRsaPublicKey = {
       public: publicKeySpki,
       algorithmIdentifier
@@ -100,14 +115,25 @@ export const Rsa = {
 };
 
 export const Hmac = {
-  generateKey: async (algorithmIdentifier: HmacAlgorithm) => {
-    return await ExpoKryptomModule.generateKeyHmac(algorithmIdentifier) as HmacKey;
+  generateKey: async (algorithmIdentifier: HmacAlgorithm): Promise<HmacKey> => {
+    return await ExpoKryptomModule.generateKeyHmac(algorithmIdentifier)
   },
-  sign: async (data: Uint8Array, key: { key: Uint8Array, algorithmIdentifier: HmacAlgorithm }) => {
-    return await ExpoKryptomModule.signHmac(key.algorithmIdentifier, key.key, data) as Uint8Array;
+  sign: async (data: Uint8Array, key: HmacKey): Promise<Uint8Array> => {
+    return await ExpoKryptomModule.signHmac(key.algorithmIdentifier, (key as NativeHmacKey).rawKey, data)
   },
-  verify: async (signature: Uint8Array, data: Uint8Array, key: { key: Uint8Array, algorithmIdentifier: HmacAlgorithm }) => {
-    return await ExpoKryptomModule.verifyHmac(key.algorithmIdentifier, key.key, signature, data) as boolean;
+  verify: async (signature: Uint8Array, data: Uint8Array, key: HmacKey): Promise<boolean> => {
+    return await ExpoKryptomModule.verifyHmac(key.algorithmIdentifier, (key as NativeHmacKey).rawKey, signature, data)
+  },
+  exportRawKey: async (key: HmacKey): Promise<Uint8Array> => {
+    return (key as NativeHmacKey).rawKey;
+  },
+  importRawKey: async (rawKey: Uint8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey> => {
+    // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
+    const res: NativeHmacKey = {
+      rawKey,
+      algorithmIdentifier
+    }
+    return res;
   },
 }
 
@@ -126,31 +152,19 @@ export const Digest = {
   },
 }
 
+export type AesAlgorithm = "AesCbcPkcs7";
 export type RsaEncryptionAlgorithm = "OaepWithSha1" | "OaepWithSha256";
 export type RsaSignatureAlgorithm = "PssWithSha256";
 export type RsaAlgorithm = RsaEncryptionAlgorithm | RsaSignatureAlgorithm
 export type HmacAlgorithm = "HmacSha512"
 
-type NativeRsaKeyPair = {
-  public: Uint8Array;
-  private: Uint8Array;
-  algorithmIdentifier: RsaAlgorithm;
-};
-
-export type HmacKey = {
-  key: Uint8Array;
+export interface HmacKey {
   algorithmIdentifier: HmacAlgorithm;
 };
 
-type NativeRsaPrivateKey = {
-  private: Uint8Array;
-  algorithmIdentifier: RsaAlgorithm;
-};
-
-type NativeRsaPublicKey = {
-  public: Uint8Array;
-  algorithmIdentifier: RsaAlgorithm;
-};
+export interface AesKey {
+  algorithmIdentifier: AesAlgorithm;
+}
 
 export interface RsaKeyPair {
   algorithmIdentifier: RsaAlgorithm
@@ -184,4 +198,30 @@ export type PublicRsaKeyJwk = {
   ext: boolean
   key_ops: string[]
   n: string
+}
+
+type NativeRsaKeyPair = {
+  public: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
+  private: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
+  algorithmIdentifier: RsaAlgorithm;
+};
+
+type NativeRsaPrivateKey = {
+  private: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
+  algorithmIdentifier: RsaAlgorithm;
+};
+
+type NativeRsaPublicKey = {
+  public: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
+  algorithmIdentifier: RsaAlgorithm;
+};
+
+type NativeAesKey = {
+  rawKey: Uint8Array; // Representation of the key as raw bytes
+  algorithmIdentifier: AesAlgorithm;
+}
+
+type NativeHmacKey = {
+  rawKey: Uint8Array; // Representation of the key as raw bytes
+  algorithmIdentifier: HmacAlgorithm;
 }

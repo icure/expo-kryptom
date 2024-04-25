@@ -4,7 +4,7 @@ const Buffer = require("buffer").Buffer;
 
 const data = "The quick brown fox jumps over the lazy dog"
 const dataBytes = new Uint8Array(Buffer.from(data, "utf-8"))
-const aesKey = "vNImq6i5ff6Y8UhhqhyGWw=="
+const rawAesKey = "vNImq6i5ff6Y8UhhqhyGWw=="
 const aesEncryptedData = "Yfp9eibllZVoVBaznalQ8F6jQtE/BTBI9cwVAvu0ZV3TqJhbOkCf1YIW1P21Gekl5hPN5uSE9Uj5LSWT7cp83Q=="
 const rsaKeyPrivate = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRwnz+NTVzKu7mPhVqLMT6clQG/FZAkv7ATpfbGZpjsuIRj/8ZU3a9oXmIH4f0" +
     "wKbqN9lRECwmfgWxaXdjoUilDXqMUrk4onHa/EfFfzb+BPxGj1cM0wVyZiYbq68vdmI4TAZicB8BUngvX74EJFA31Df5nghjnKnqpqbHaKtw" +
@@ -33,7 +33,7 @@ const rsaSigned = "tk2p1HWxncYaHRIw7rqZsDJtIvUNNzvNQJgkn5qU3p2r2UjDWtWchHcsSRpOt
     "dcWtUq6dS/FAw0slqLVu4mJlu5+JbHtq2a2do5HAccNE7K3ollivmmPC2/K3sqogxrb2X14GxETwIUE7hk3FQA+WV1pyulj/AyF41WM5" +
     "t1ey3X3lvkb878upH7I7JtwNcxHH0mqYsm7NOol1TF58NYv7a+FqJSnMlZ95GaXut4BxRT+u7Ul3AQqJYeXeebv04WWHcZXfhz3a6lVU" +
     "SMOVs7v1hJNL5EkHpeM5Dl2KsQKCW2lMpnSzIPNQ=="
-const hmacKey = "E8Kij04n2hg/j3y/d7M8RRmQLQHA+oCR7Uldec/f+kZH17nE0i7haenaM8tFrUljA+p0F/sHOLw+HPtmtcCl8xnqajmj" +
+const rawHmacKey = "E8Kij04n2hg/j3y/d7M8RRmQLQHA+oCR7Uldec/f+kZH17nE0i7haenaM8tFrUljA+p0F/sHOLw+HPtmtcCl8xnqajmj" +
     "cTtfImZZD67uaIt30UkoMUQqOb62oR3cQ/fdWgIZTMk811HfE91UweqfalT6kAg5yh5wTc+xY5FGkLk="
 const hmacSignature = "mCU9EWH5nXV58sDhUGfKYT45UGU5D3LyTtmsVqcobnbui2cg2e/muzegtDR3x5amAyb+4tpXXXPh/3M7ngblZA=="
 
@@ -47,11 +47,13 @@ function checkDecryptedData(decrypted: Uint8Array) {
 }
 
 export async function testExpoKryptom() {
-    checkDecryptedData(await Aes.decrypt(b64_2ua(aesEncryptedData), b64_2ua(aesKey)))
+    const aesKey = await Aes.importRawKey(b64_2ua(rawAesKey), "AesCbcPkcs7")
+    checkDecryptedData(await Aes.decrypt(b64_2ua(aesEncryptedData), aesKey))
     const privateKeyDecrypt = await Rsa.importPrivateKeyPkcs8(b64_2ua(rsaKeyPrivate), "OaepWithSha1")
     checkDecryptedData(await Rsa.decrypt(b64_2ua(rsaEncrypted), privateKeyDecrypt))
     const publicKeyVerify = await Rsa.importPublicKeySpki(b64_2ua(rsaKeyPublic), "PssWithSha256")
     if (!await Rsa.verify(b64_2ua(rsaSigned), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
-    if (!await Hmac.verify(b64_2ua(hmacSignature), dataBytes, { key: b64_2ua(hmacKey), algorithmIdentifier: "HmacSha512" })) throw new Error("HMAC verification failed")
+    const hmacKey = await Hmac.importRawKey(b64_2ua(rawHmacKey), "HmacSha512")
+    if (!await Hmac.verify(b64_2ua(hmacSignature), dataBytes, hmacKey)) throw new Error("HMAC verification failed")
 }
 

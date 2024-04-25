@@ -18,29 +18,39 @@ enum AesKeySize: Int32 {
 public struct AesKryptomWrapper {
     private static let aes = CryptoServiceKt.defaultCryptoService.aes
     
-    static func generateKey(size: AesKeySize) async throws -> Data {
+    static func generateKey(algorithmIdentifier: String, size: AesKeySize) async throws -> [String: Any] {
         let keySize = size.toAesServiceKeySize()
-        let aesKey = try await aes.generateKey(size: keySize)
+        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let aesKey = try await aes.generateKey(algorithm: algorithm, size: keySize)
         
-        print("Generated")
-        
-        return aesKey.toNSData()
+        return mapKeyToDictonary(key: aesKey)
     }
     
-    static func encrypt(data: Data, key: Data, iv: Data?) async throws -> Data {
+    static func encrypt(data: Data, key: Data, algorithmIdentifier: String, iv: Data?) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(data)
-        let kKey = NSDataUtilsKt.toByteArray(key)
+        let kRawKey = NSDataUtilsKt.toByteArray(key)
+        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
-        let encryptedData = try await aes.encrypt(data: kData, key: kKey, iv: kIv)
+        let kKey = AesKey(rawKey: kRawKey, algorithm: algorithm)
+        let encryptedData = try await aes.encrypt(data: kData, key: kKey.dropTypeInfo(), iv: kIv)
         
         return encryptedData.toNSData()
     }
     
-    static func decrypt(ivAndEncryptedData: Data, key: Data) async throws -> Data {
+    static func decrypt(ivAndEncryptedData: Data, key: Data, algorithmIdentifier: String) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
-        let kKey = NSDataUtilsKt.toByteArray(key)
-        let decryptedData = try await aes.decrypt(ivAndEncryptedData: kData, key: kKey)
+        let kRawKey = NSDataUtilsKt.toByteArray(key)
+        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let kKey = AesKey(rawKey: kRawKey, algorithm: algorithm)
+        let decryptedData = try await aes.decrypt(ivAndEncryptedData: kData, key: kKey.dropTypeInfo())
         
         return decryptedData.toNSData()
+    }
+    
+    private static func mapKeyToDictonary(key: AesKey<any AesAlgorithm>) -> [String: Any] {
+        return [
+            "rawKey": key.rawKey.toNSData(),
+            "algorithmIdentifier": key.algorithm.identifier
+        ]
     }
 }

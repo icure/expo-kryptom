@@ -9,25 +9,27 @@ class ExpoKryptomModule : Module() {
     Name("ExpoKryptom")
 
     Constants(
-      "needExports" to false
+      "rsaKeyNeedsExport" to false
     )
 
-    AsyncFunction("generateKeyAes") Coroutine { size: Int ->
-      AesService.generateKey(size = size)
+    AsyncFunction("generateKeyAes") Coroutine { algorithmIdentifier: String, size: Int ->
+      AesService.generateKey(algorithmIdentifier = algorithmIdentifier, size = size)
     }
 
-    AsyncFunction("encryptAes") Coroutine { data: ByteArray, key: ByteArray, iv: ByteArray? ->
+    AsyncFunction("encryptAes") Coroutine { data: ByteArray, key: ByteArray, algorithmIdentifier: String, iv: ByteArray? ->
       AesService.encrypt(
         data = data,
         key = key,
+        algorithmIdentifier = algorithmIdentifier,
         iv = iv
       )
     }
 
-    AsyncFunction("decryptAes") Coroutine { ivAndEncryptedData: ByteArray, key: ByteArray ->
+    AsyncFunction("decryptAes") Coroutine { ivAndEncryptedData: ByteArray, key: ByteArray, algorithmIdentifier: String ->
       AesService.decrypt(
         ivAndEncryptedData = ivAndEncryptedData,
-        key = key
+        key = key,
+        algorithmIdentifier = algorithmIdentifier
       )
     }
 
@@ -106,7 +108,7 @@ class ExpoKryptomModule : Module() {
       )
     }
 
-        AsyncFunction("generateKeyHmac") Coroutine { algorithmIdentifier: String ->
+    AsyncFunction("generateKeyHmac") Coroutine { algorithmIdentifier: String ->
       HmacService.generateKey(algorithmIdentifier = algorithmIdentifier)
     }
 

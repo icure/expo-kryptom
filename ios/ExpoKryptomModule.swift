@@ -6,23 +6,23 @@ public class ExpoKryptomModule: Module {
         Name("ExpoKryptom")
         
         Constants([
-            "needExports": true
+            "rsaKeyNeedsExport": true
         ])
         
-        AsyncFunction("generateKeyAes") { (size: Int32) in
+        AsyncFunction("generateKeyAes") { (algorithmIdentifier: String, size: Int32) in
             guard let keySize = AesKeySize(rawValue: size) else {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
             }
             
-            return try await AesKryptomWrapper.generateKey(size: keySize)
+            return try await AesKryptomWrapper.generateKey(algorithmIdentifier: algorithmIdentifier, size: keySize)
         }
         
-        AsyncFunction("encryptAes") { (data: Data, key: Data, iv: Data?) in
-            return try await AesKryptomWrapper.encrypt(data: data, key: key, iv: iv)
+        AsyncFunction("encryptAes") { (data: Data, key: Data, algorithmIdentifier: String, iv: Data?) in
+            return try await AesKryptomWrapper.encrypt(data: data, key: key, algorithmIdentifier: algorithmIdentifier, iv: iv)
         }
         
-        AsyncFunction("decryptAes") { (ivAndEncryptedData: Data, key: Data) in
-            return try await AesKryptomWrapper.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key)
+        AsyncFunction("decryptAes") { (ivAndEncryptedData: Data, key: Data, algorithmIdentifier: String) in
+            return try await AesKryptomWrapper.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key, algorithmIdentifier: algorithmIdentifier)
         }
         
         AsyncFunction("generateKeyRsa") { (algorithmIdentifier: String, size: Int32) in
