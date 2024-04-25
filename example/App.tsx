@@ -1,4 +1,4 @@
-import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac, StrongRandom, Digest } from "expo-kryptom";
+import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, RsaKeyPair, Hmac, StrongRandom, Digest, AesAlgorithm, HmacAlgorithm, RsaEncryptionAlgorithm, RsaSignatureAlgorithm } from "expo-kryptom";
 import { useReducer, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { testExpoKryptom } from "./Test";
@@ -81,7 +81,7 @@ export default function App() {
       <Text>{ua2b64(new Uint8Array(bytes))}</Text>
       <Button
         onPress={async () => {
-          const key = await Aes.generateKey("AesCbcPkcs7", 256);
+          const key = await Aes.generateKey(AesAlgorithm.AesCbcPkcs7, 256);
           console.log("Got key");
           console.log(JSON.stringify(key));
           const encrypted = await Aes.encrypt(
@@ -130,7 +130,7 @@ export default function App() {
         <>
           <Button
             onPress={async () => {
-              const key = await Rsa.generateKey("PssWithSha256", 2048);
+              const key = await Rsa.generateKey(RsaSignatureAlgorithm.PssWithSha256, 2048);
               console.log("Got key");
               console.log(key);
 
@@ -259,7 +259,7 @@ export default function App() {
         <>
           <Button
             onPress={async () => {
-              const key = await Rsa.generateKey("OaepWithSha256", 2048);
+              const key = await Rsa.generateKey(RsaEncryptionAlgorithm.OaepWithSha256, 2048);
               console.log("Got key");
               console.log(key);
 
@@ -304,7 +304,7 @@ export default function App() {
         <>
           <Button
             onPress={async () => {
-              const key = await Hmac.generateKey("HmacSha512");
+              const key = await Hmac.generateKey(HmacAlgorithm.HmacSha512);
               console.log("Got key");
               console.log(JSON.stringify(key));
               hmacDispatch({
@@ -343,7 +343,7 @@ export default function App() {
       <Button
         onPress={async () => {
           try {
-            await Rsa.generateKey("ThisAlgorithmDoesNotExist", 2048)
+            await Rsa.generateKey("ThisAlgorithmDoesNotExist" as any, 2048)
             console.log("Success - this should not happen")
           } catch (e) {
             console.log("Failed to generate key (as expected)") 

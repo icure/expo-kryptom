@@ -1,4 +1,4 @@
-import { Aes, Hmac, Rsa } from "expo-kryptom"
+import { Aes, Hmac, Rsa, AesAlgorithm, RsaEncryptionAlgorithm, RsaSignatureAlgorithm, HmacAlgorithm } from "expo-kryptom"
 
 const Buffer = require("buffer").Buffer;
 
@@ -47,13 +47,13 @@ function checkDecryptedData(decrypted: Uint8Array) {
 }
 
 export async function testExpoKryptom() {
-    const aesKey = await Aes.importRawKey(b64_2ua(rawAesKey), "AesCbcPkcs7")
+    const aesKey = await Aes.importRawKey(b64_2ua(rawAesKey), AesAlgorithm.AesCbcPkcs7)
     checkDecryptedData(await Aes.decrypt(b64_2ua(aesEncryptedData), aesKey))
-    const privateKeyDecrypt = await Rsa.importPrivateKeyPkcs8(b64_2ua(rsaKeyPrivate), "OaepWithSha1")
+    const privateKeyDecrypt = await Rsa.importPrivateKeyPkcs8(b64_2ua(rsaKeyPrivate), RsaEncryptionAlgorithm.OaepWithSha1)
     checkDecryptedData(await Rsa.decrypt(b64_2ua(rsaEncrypted), privateKeyDecrypt))
-    const publicKeyVerify = await Rsa.importPublicKeySpki(b64_2ua(rsaKeyPublic), "PssWithSha256")
+    const publicKeyVerify = await Rsa.importPublicKeySpki(b64_2ua(rsaKeyPublic), RsaSignatureAlgorithm.PssWithSha256)
     if (!await Rsa.verify(b64_2ua(rsaSigned), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
-    const hmacKey = await Hmac.importRawKey(b64_2ua(rawHmacKey), "HmacSha512")
+    const hmacKey = await Hmac.importRawKey(b64_2ua(rawHmacKey), HmacAlgorithm.HmacSha512)
     if (!await Hmac.verify(b64_2ua(hmacSignature), dataBytes, hmacKey)) throw new Error("HMAC verification failed")
 }
 
