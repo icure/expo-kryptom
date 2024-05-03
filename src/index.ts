@@ -1,4 +1,7 @@
 // Import the native module. On web, it will be resolved to ExpoKryptom.web.ts
+
+import { StrongRandom } from './ExpoKryptomModule';
+
 // and on native platforms to ExpoKryptom.ts
 export { 
   AesAlgorithm, 
@@ -21,3 +24,18 @@ export {
   StrongRandom,
   Digest
 } from './ExpoKryptomModule'
+
+Buffer = require("buffer").Buffer;
+
+if (window.crypto === undefined) {
+  window.crypto = {
+    getRandomValues: (array: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | BigInt64Array | BigUint64Array) => {
+      const randomBytes: Uint8Array = StrongRandom.randomBytes(array.byteLength);
+      const toSet = new Uint8Array(array.buffer);
+      toSet.set(randomBytes);
+    },
+    getRandomUUID: () => {
+      return StrongRandom.randomUUID()
+    }
+  } as any
+}

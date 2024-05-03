@@ -1,6 +1,6 @@
 {
   "name": "expo-kryptom",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Krytpom wrapper for expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -30,7 +30,6 @@
   "author": "iCure <ad@icure.com> (https://github.com/icure)",
   "license": "MIT",
   "homepage": "https://github.com/icure/expo-kryptom#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "^18.0.25",
     "expo-module-scripts": "^3.4.1",
@@ -40,5 +39,6 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }

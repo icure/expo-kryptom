@@ -55,7 +55,7 @@ public struct RsaKryptomWrapper {
     }
     
     static func exportPrivateKeyPkcs8(privateKey: Data, algorithmIdentifier: String) async throws -> Data {
-        let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
         let loadedPrivateKey = PrivateRsaKey(rawKey: mappedRawKey, algorithm: algorithm).dropTypeInfo()
         
@@ -63,7 +63,7 @@ public struct RsaKryptomWrapper {
     }
     
     static func exportPrivateKeyJwk(privateKey: Data, algorithmIdentifier: String) async throws -> ExportPrivateRsaKeyJwk {
-        let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedRawKey = NSDataUtilsKt.toByteArray(privateKey)
         let loadedPrivateKey = PrivateRsaKey(rawKey: mappedRawKey, algorithm: algorithm).dropTypeInfo()
         
@@ -73,7 +73,7 @@ public struct RsaKryptomWrapper {
     }
     
     static func exportPublicKeySpki(publicKey: Data, algorithmIdentifier: String) async throws -> Data {
-        let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedPublicKey = NSDataUtilsKt.toByteArray(publicKey)
         let loadedPublicKey = PublicRsaKey(rawKey: mappedPublicKey, algorithm: algorithm).dropTypeInfo()
         
@@ -81,7 +81,7 @@ public struct RsaKryptomWrapper {
     }
     
     static func exportPublicKeyJwk(publicKey: Data, algorithmIdentifier: String) async throws -> ExportPublicRsaKeyJwk {
-        let algorithm = try RsaAlgorithmRsaEncryptionAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
         let mappedPublicKey = NSDataUtilsKt.toByteArray(publicKey)
         let loadedPublicKey = PublicRsaKey(rawKey: mappedPublicKey, algorithm: algorithm).dropTypeInfo()
         

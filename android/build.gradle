@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'com.icure.kryptom.expo'
-version = '0.1.0'
+version = '1.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -70,7 +70,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
-    versionName "0.1.0"
+    versionName "1.0.0"
   }
   lintOptions {
     abortOnError false
@@ -89,5 +89,5 @@ repositories {
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation 'com.icure:kryptom-android:0.1.102-feature.kryptom-exportability.g9aa095f274' // TODO this is in maven local
+  implementation "com.icure.kryptom:kryptom-android:1.0.0"
 }
