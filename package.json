@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "updateIosFramework": "cd icure-multiplatform-sdk && ./gradlew :kryptom:assembleKryptomReleaseXCFramework && cd .. && rm -rf ./ios/Frameworks && mkdir -p ios/Frameworks && cp -r ./icure-multiplatform-sdk/kryptom/build/XCFrameworks/release/Kryptom.xcframework ios/Frameworks/Kryptom.xcframework",
+    "updateIosFramework": "cd kryptom && ./gradlew :lib:assembleKryptomReleaseXCFramework && cd .. && rm -rf ./ios/Frameworks && mkdir -p ios/Frameworks && cp -r ./kryptom/lib/build/XCFrameworks/release/Kryptom.xcframework ios/Frameworks/Kryptom.xcframework",
     "cleanReinstallPods": "cd example/ios && rm -rf ~/Library/Caches/CocoaPods && rm -rf Pods && rm -rf ~/Library/Developer/Xcode/DerivedData/* && pod deintegrate && pod setup && pod install && cd ../..",
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -40,5 +40,5 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "yarn@4.1.1"
+  "packageManager": "yarn@4.2.1"
 }

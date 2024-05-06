@@ -1,0 +1,3 @@
+[submodule "kryptom"]
+	path = kryptom
+	url = git@github.com:icure/kryptom.git
