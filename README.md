@@ -1,7 +1,17 @@
 
 # Expo-Kryptom
 
-Native code bridge for Expo using Kryptom to add cryptographic capabilities
+Native code bridge for Expo using [Kryptom](https://github.com/icure/kryptom) to add cryptographic capabilities
+
+Kryptom provides access from kotlin multiplatform to:
+
+- Native cryptographic primitives and digest algorithms including:
+  - Secure random
+  - Aes encryption
+  - Rsa encryption and signing
+  - Hmac signing
+- Byte array encoding and decoding (hex, base64)
+
 
 
 ## Installation
