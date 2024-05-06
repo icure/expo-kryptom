@@ -1868,6 +1868,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@icure/expo-kryptom@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@icure/expo-kryptom@workspace:."
+  dependencies:
+    "@types/react": "npm:^18.0.25"
+    expo-module-scripts: "npm:^3.4.1"
+    expo-modules-core: "npm:^1.11.12"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -4068,20 +4082,6 @@ __metadata:
   checksum: 10c0/2eddeace66e68b8d8ee5f7be57f3014b19770caaf6815c7a08d131821da527fb8c8cb7b3dcd7c883d2d3d8d184206a4268984618032d1e4b16dc8d6596475d41
   languageName: node
   linkType: hard
-
-"expo-kryptom@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "expo-kryptom@workspace:."
-  dependencies:
-    "@types/react": "npm:^18.0.25"
-    expo-module-scripts: "npm:^3.4.1"
-    expo-modules-core: "npm:^1.11.12"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
 
 "expo-module-scripts@npm:^3.4.1":
   version: 3.4.2

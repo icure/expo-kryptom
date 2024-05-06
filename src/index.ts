@@ -33,6 +33,7 @@ if (window.crypto === undefined) {
       const randomBytes: Uint8Array = StrongRandom.randomBytes(array.byteLength);
       const toSet = new Uint8Array(array.buffer);
       toSet.set(randomBytes);
+      return array;
     },
     getRandomUUID: () => {
       return StrongRandom.randomUUID()

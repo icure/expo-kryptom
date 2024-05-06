@@ -1,5 +1,5 @@
 {
-  "name": "expo-kryptom",
+  "name": "@icure/expo-kryptom",
   "version": "1.0.0",
   "description": "Krytpom wrapper for expo",
   "main": "build/index.js",
