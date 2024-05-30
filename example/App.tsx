@@ -2,8 +2,8 @@ import { Aes, HmacKey, PrivateRsaKeyJwk, PublicRsaKeyJwk, Rsa, RsaAlgorithm, Rsa
 import { useReducer, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { testExpoKryptom } from "./Test";
+import { Buffer } from "buffer";
 
-const Buffer = require("buffer").Buffer;
 const bytes = [0x3a, 0x13, 0x68, 0x1a, 0x8a, 0xe2, 0x96, 0x50];
 
 function ua2b64(ua: Uint8Array) {

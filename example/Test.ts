@@ -1,6 +1,5 @@
 import { Aes, Hmac, Rsa, AesAlgorithm, RsaEncryptionAlgorithm, RsaSignatureAlgorithm, HmacAlgorithm } from "expo-kryptom"
-
-const Buffer = require("buffer").Buffer;
+import { Buffer } from "buffer"
 
 const data = "The quick brown fox jumps over the lazy dog"
 const dataBytes = new Uint8Array(Buffer.from(data, "utf-8"))
