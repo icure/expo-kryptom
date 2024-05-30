@@ -49,7 +49,7 @@ public struct AesKryptomWrapper {
     
     private static func mapKeyToDictonary(key: AesKey<any AesAlgorithm>) -> [String: Any] {
         return [
-            "rawKey": key.rawKey.toNSData(),
+            "key": key.rawKey.toNSData(),
             "algorithmIdentifier": key.algorithm.identifier
         ]
     }

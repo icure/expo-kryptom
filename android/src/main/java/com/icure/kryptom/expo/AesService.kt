@@ -35,6 +35,6 @@ object AesService {
 
     private suspend fun AesKey<*>.toMap(): Map<String, Any> = mapOf(
         "algorithmIdentifier" to algorithm.identifier,
-        "rawKey" to defaultCryptoService.aes.exportKey(this)
+        "key" to defaultCryptoService.aes.exportKey(this)
     )
 }

@@ -37,6 +37,6 @@ object HmacService {
 
     private suspend fun HmacKey<*>.toMap(): Map<String, Any> = mapOf(
         "algorithmIdentifier" to algorithm.identifier,
-        "rawKey" to defaultCryptoService.hmac.exportKey(this)
+        "key" to defaultCryptoService.hmac.exportKey(this)
     )
 }

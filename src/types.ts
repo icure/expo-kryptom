@@ -15,22 +15,28 @@ export enum HmacAlgorithm {
 
 export interface HmacKey {
   algorithmIdentifier: HmacAlgorithm;
+  key: unknown; // Actual type and format depends on the platform
 };
 
 export interface AesKey {
   algorithmIdentifier: AesAlgorithm;
+  key: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaKeyPair {
   algorithmIdentifier: RsaAlgorithm
+  privateKey: unknown; // Actual type and format depends on the platform
+  publicKey: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaPrivateKey {
   algorithmIdentifier: RsaAlgorithm
+  privateKey: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaPublicKey {
   algorithmIdentifier: RsaAlgorithm
+  publicKey: unknown; // Actual type and format depends on the platform
 }
 
 export type PrivateRsaKeyJwk = {
