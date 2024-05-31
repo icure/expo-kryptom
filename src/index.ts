@@ -34,7 +34,7 @@ if (window.crypto === undefined) {
       toSet.set(randomBytes);
       return array;
     },
-    getRandomUUID: () => {
+    randomUUID: () => {
       return StrongRandom.randomUUID()
     }
   } as any
