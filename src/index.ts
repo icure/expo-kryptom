@@ -24,18 +24,7 @@ export {
   StrongRandom,
   Digest
 } from './ExpoKryptomModule'
-
-if (window.crypto === undefined) {
-  // noinspection JSConstantReassignment
-  window.crypto = {
-    getRandomValues: (array: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | BigInt64Array | BigUint64Array) => {
-      const randomBytes: Uint8Array = StrongRandom.randomBytes(array.byteLength);
-      const toSet = new Uint8Array(array.buffer);
-      toSet.set(randomBytes);
-      return array;
-    },
-    randomUUID: () => {
-      return StrongRandom.randomUUID()
-    }
-  } as any
-}
+export {
+  polyfillGlobalCryptoWithStrongRandom,
+  polyfillWindowCryptoWithStrongRandom
+} from './Polyfill'
