@@ -9,7 +9,7 @@ public class ExpoKryptomModule: Module {
             "rsaKeyNeedsExport": true
         ])
         
-        AsyncFunction("generateKeyAes") { (algorithmIdentifier: String, size: Int32) in
+        AsyncFunction("generateKeyAes") { (algorithmIdentifier: String, size: Int32) -> [String: Any] in
             guard let keySize = AesKeySize(rawValue: size) else {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
             }
@@ -25,7 +25,7 @@ public class ExpoKryptomModule: Module {
             return try await AesKryptomWrapper.decrypt(ivAndEncryptedData: ivAndEncryptedData, key: key, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("generateKeyRsa") { (algorithmIdentifier: String, size: Int32) in
+        AsyncFunction("generateKeyRsa") { (algorithmIdentifier: String, size: Int32) -> [String: Any] in
             guard let keySize = RsaKeySize(rawValue: size) else {
                 throw Exception(name: "IllegalArgument", description: "Unsupported key size \(size)")
             }

@@ -11,7 +11,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (12.8.2):
     - ExpoModulesCore
-  - ExpoKryptom (1.1.1):
+  - ExpoKryptom (1.1.2):
     - ExpoModulesCore
   - ExpoModulesCore (1.11.13):
     - glog
@@ -1262,7 +1262,7 @@ SPEC CHECKSUMS:
   Expo: ad8bce0c0fc557cae703cc8dbce73d61a90ab5c5
   ExpoFileSystem: 74cc0fae916f9f044248433971dcfc8c3befd057
   ExpoKeepAwake: 0f5cad99603a3268e50af9a6eb8b76d0d9ac956c
-  ExpoKryptom: 4cf45d7de0fa45a8123b0e7e341db4489f218d50
+  ExpoKryptom: ecbad476e75acb1b9ae3a4b75b9c8595e27b92e7
   ExpoModulesCore: 4a8928a228569301ac4fc4a1e846713e05754d05
   FBLazyVector: f64d1e2ea739b4d8f7e4740cde18089cd97fe864
   FBReactNativeSpec: 9f2b8b243131565335437dba74923a8d3015e780

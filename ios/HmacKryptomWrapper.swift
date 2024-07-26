@@ -5,7 +5,7 @@ public struct HmacKryptomWrapper {
     private static let hmac = CryptoServiceKt.defaultCryptoService.hmac
     
     static func generateKey(algorithmIdentifier: String) async throws -> [String: Any] {
-        return mapKeyToDictonary(key: try await hmac.generateKey(algorithm: HmacAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)))
+        return mapKeyToDictonary(key: try await hmac.generateKey(algorithm: HmacAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier), keySize: nil))
     }
     
     static func sign(algorithmIdentifier: String, key: Data, data: Data) async throws -> Data {
