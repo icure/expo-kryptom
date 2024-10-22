@@ -164,12 +164,12 @@ export const Rsa: RsaService = {
     const importedKeyPair = await ExpoKryptomModule.importKeyPairRsa(new Uint8Array(privateKeyPkcs8), algorithm);
     return {
       public: {
-        publicKey: new Int8Array(importedKeyPair.publicKey),
-        algorithm: importedKeyPair.algorithm
+        publicKey: new Int8Array(importedKeyPair.public.publicKey),
+        algorithm: importedKeyPair.public.algorithm
       },
       private: {
-        privateKey: new Int8Array(importedKeyPair.privateKey),
-        algorithm: importedKeyPair.algorithm
+        privateKey: new Int8Array(importedKeyPair.private.privateKey),
+        algorithm: importedKeyPair.private.algorithm
       },
     } satisfies NativeRsaKeyPair;
   },

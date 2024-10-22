@@ -10,9 +10,14 @@ import com.icure.kryptom.expo.ExportPublicRsaKeyJwk.Companion.toExport
 object RsaService {
 
     private suspend fun RsaKeypair<RsaAlgorithm>.toMap() = mapOf(
-        "publicKey" to defaultCryptoService.rsa.exportPublicKeySpki(public),
-        "privateKey" to defaultCryptoService.rsa.exportPrivateKeyPkcs8(private),
-        "algorithmIdentifier" to algorithm.identifier
+        "public" to mapOf(
+            "publicKey" to defaultCryptoService.rsa.exportPublicKeySpki(public),
+            "algorithm" to public.algorithm.identifier
+        ),
+        "private" to mapOf(
+            "privateKey" to defaultCryptoService.rsa.exportPrivateKeyPkcs8(private),
+            "algorithm" to private.algorithm.identifier
+        ),
     )
 
     suspend fun generateKey(
@@ -63,7 +68,7 @@ object RsaService {
     ).let {
         mapOf(
             "privateKey" to defaultCryptoService.rsa.exportPrivateKeyPkcs8(it),
-            "algorithmIdentifier" to it.algorithm.identifier,
+            "algorithm" to it.algorithm.identifier,
         )
     }
 
@@ -73,7 +78,7 @@ object RsaService {
     ).let {
         mapOf(
             "publicKey" to defaultCryptoService.rsa.exportPublicKeySpki(it),
-            "algorithmIdentifier" to it.algorithm.identifier,
+            "algorithm" to it.algorithm.identifier,
         )
     }
 
