@@ -143,23 +143,28 @@ public struct RsaKryptomWrapper {
     
     private static func mapKeyPairToDictonary(keyPair: RsaKeypair<RsaAlgorithm>) -> [String: Any] {
         return [
-            "privateKey": keyPair.private_.rawKey.toNSData(),
-            "publicKey": keyPair.public_.rawKey.toNSData(),
-            "algorithmIdentifier": keyPair.algorithm.identifier
+            "private": [
+                "privateKey": keyPair.private_.rawKey.toNSData(),
+                "algorithm": keyPair.private_.algorithm.identifier
+            ],
+            "public": [
+                "publicKey": keyPair.public_.rawKey.toNSData(),
+                "algorithm": keyPair.public_.algorithm.identifier
+            ],
         ]
     }
     
     private static func mapPublicKeyToDictionnary(publicKey: PublicRsaKey<RsaAlgorithm>) -> [String: Any] {
         return [
             "publicKey": publicKey.rawKey.toNSData(),
-            "algorithmIdentifier": publicKey.algorithm.identifier
+            "algorithm": publicKey.algorithm.identifier
         ]
     }
     
     private static func mapPrivateKeyToDictionnary(privateKey: PrivateRsaKey<RsaAlgorithm>) -> [String: Any] {
         return [
             "privateKey": privateKey.rawKey.toNSData(),
-            "algorithmIdentifier": privateKey.algorithm.identifier
+            "algorithm": privateKey.algorithm.identifier
         ]
     }
 }

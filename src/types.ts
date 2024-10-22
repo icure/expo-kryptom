@@ -15,19 +15,19 @@ export enum HmacAlgorithm {
 }
 
 export interface HmacKey {
-  algorithm: HmacAlgorithm;
-  key: unknown; // Actual type and format depends on the platform
+  readonly algorithm: HmacAlgorithm;
+  readonly keySize: number;
+  readonly hmacKey?: unknown; // Actual type and format depends on the platform
 };
 
 export interface AesKey {
   algorithm: AesAlgorithm;
-  key: unknown; // Actual type and format depends on the platform
+  aesKey: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaKeyPair {
-  algorithm: RsaAlgorithm
-  privateKey: unknown; // Actual type and format depends on the platform
-  publicKey: unknown; // Actual type and format depends on the platform
+  private: RsaPrivateKey;
+  public: RsaPublicKey;
 }
 
 export interface RsaPrivateKey {

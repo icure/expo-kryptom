@@ -130,19 +130,19 @@ export default function App() {
 								return;
 							}
 
-							if (rsaSignatureState.keyPair.algorithm !== "PssWithSha256") {
-								Alert.alert("Algorithm not supported for signature", rsaSignatureState.keyPair.algorithm);
+							if (rsaSignatureState.keyPair.private.algorithm !== "PssWithSha256") {
+								Alert.alert("Algorithm not supported for signature", rsaSignatureState.keyPair.private.algorithm);
 								return;
 							}
 
 							const signature = await Rsa.sign(
 								new Int8Array(bytes),
-								rsaSignatureState.keyPair,
+								rsaSignatureState.keyPair.private,
 							);
 							console.log("Signature");
 							console.log(ua2b64(new Uint8Array(signature)));
 
-							const verified = await Rsa.verifySignature(signature, new Int8Array(bytes), rsaSignatureState.keyPair);
+							const verified = await Rsa.verifySignature(signature, new Int8Array(bytes), rsaSignatureState.keyPair.public);
 							console.log("Verified");
 							console.log(verified);
 						}}
@@ -179,12 +179,12 @@ export default function App() {
 
 							const encrypted = await Rsa.encrypt(
 								new Int8Array(bytes),
-								rsaEncryptionState.keyPair,
+								rsaEncryptionState.keyPair.public,
 							);
 							console.log("Encrypted");
 							console.log(ua2b64(new Uint8Array(encrypted)));
 
-							const decrypted = await Rsa.decrypt(encrypted, rsaEncryptionState.keyPair);
+							const decrypted = await Rsa.decrypt(encrypted, rsaEncryptionState.keyPair.private);
 							console.log("Decrypted");
 							console.log(ua2b64(new Uint8Array(decrypted)));
 						}}
@@ -192,7 +192,7 @@ export default function App() {
 					/>
 					<Button
 						onPress={async () => {
-							const key = await Rsa.exportPrivateKeyJwk(rsaEncryptionState.keyPair);
+							const key = await Rsa.exportPrivateKeyJwk(rsaEncryptionState.keyPair.private);
 							console.log("Got JWK private key");
 							console.log(key);
 							setPrivateKeyJwk(key);
@@ -211,7 +211,7 @@ export default function App() {
 					)}
 					<Button
 						onPress={async () => {
-							const key = await Rsa.exportPublicKeyJwk(rsaEncryptionState.keyPair);
+							const key = await Rsa.exportPublicKeyJwk(rsaEncryptionState.keyPair.public);
 							console.log("Got JWK Public key");
 							console.log(key);
 							setPublicKeyJwk(key);
@@ -231,7 +231,7 @@ export default function App() {
 					)}
 					<Button
 						onPress={async () => {
-							const key = await Rsa.exportPrivateKeyPkcs8(rsaEncryptionState.keyPair);
+							const key = await Rsa.exportPrivateKeyPkcs8(rsaEncryptionState.keyPair.private);
 							console.log("Got Private key in PKCS8 format");
 							console.log(key);
 							setPrivateKeyPkcs8(key);
@@ -242,7 +242,7 @@ export default function App() {
 						<>
 							<Button
 								onPress={async () => {
-									const key = await Rsa.loadPrivateKeyPkcs8(rsaEncryptionState.keyPair.algorithm, privateKeyPkcs8!);
+									const key = await Rsa.loadPrivateKeyPkcs8(rsaEncryptionState.keyPair.private.algorithm, privateKeyPkcs8!);
 									console.log("Imported PKCS8 private key");
 									console.log(key);
 								}}
@@ -250,7 +250,7 @@ export default function App() {
 							/>
 							<Button
 								onPress={async () => {
-									const key = await Rsa.loadKeyPairPkcs8(rsaEncryptionState.keyPair.algorithm, privateKeyPkcs8);
+									const key = await Rsa.loadKeyPairPkcs8(rsaEncryptionState.keyPair.private.algorithm, privateKeyPkcs8);
 									console.log("Imported key pair");
 									console.log(key);
 								}}
@@ -260,7 +260,7 @@ export default function App() {
 					)}
 					<Button
 						onPress={async () => {
-							const key = await Rsa.exportPublicKeySpki(rsaEncryptionState.keyPair);
+							const key = await Rsa.exportPublicKeySpki(rsaEncryptionState.keyPair.public);
 							console.log("Got Public key in SPKI format");
 							console.log(key);
 							setPublicKeySpki(key);
@@ -270,7 +270,7 @@ export default function App() {
 					{publicKeySpki != undefined && (
 						<Button
 							onPress={async () => {
-								const key = await Rsa.loadPublicKeySpki(rsaEncryptionState.keyPair.algorithm, publicKeySpki!);
+								const key = await Rsa.loadPublicKeySpki(rsaEncryptionState.keyPair.public.algorithm, publicKeySpki!);
 								console.log("Imported SPKI public key");
 								console.log(key);
 							}}
