@@ -33,6 +33,13 @@ object AesService {
         )
     )
 
+    suspend fun exportKey(key: ByteArray, algorithmIdentifier: String) = defaultCryptoService.aes.exportKey(
+        key = defaultCryptoService.aes.loadKey(
+            AesAlgorithm.fromIdentifier(algorithmIdentifier),
+            key
+        )
+    )
+
     private suspend fun AesKey<*>.toMap(): Map<String, Any> = mapOf(
         "algorithmIdentifier" to algorithm.identifier,
         "key" to defaultCryptoService.aes.exportKey(this)

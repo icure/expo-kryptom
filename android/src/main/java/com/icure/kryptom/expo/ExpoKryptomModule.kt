@@ -33,6 +33,13 @@ class ExpoKryptomModule : Module() {
       )
     }
 
+    AsyncFunction("exportKeyAes") Coroutine { key: ByteArray, algorithmIdentifier: String ->
+      AesService.exportKey(
+        key = key,
+        algorithmIdentifier = algorithmIdentifier
+      )
+    }
+
     AsyncFunction("generateKeyRsa") Coroutine { algorithmIdentifier: String, size: Int ->
       RsaService.generateKey(
         algorithmIdentifier = algorithmIdentifier,
