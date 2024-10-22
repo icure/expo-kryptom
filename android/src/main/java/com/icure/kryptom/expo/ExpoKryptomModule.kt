@@ -77,17 +77,15 @@ class ExpoKryptomModule : Module() {
       )
     }
 
-    AsyncFunction("importPrivateKeyJwkRsa") Coroutine { privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String ->
+    AsyncFunction("importPrivateKeyJwkRsa") Coroutine { privateKey: ExportPrivateRsaKeyJwk ->
       RsaService.importPrivateKeyJwk(
         privateKey = privateKey,
-        algorithmIdentifier = algorithmIdentifier
       )
     }
 
-    AsyncFunction("importPublicKeyJwkRsa") Coroutine { publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String ->
+    AsyncFunction("importPublicKeyJwkRsa") Coroutine { publicKey: ExportPublicRsaKeyJwk ->
       RsaService.importPublicKeyJwk(
         publicKey = publicKey,
-        algorithmIdentifier = algorithmIdentifier
       )
     }
 

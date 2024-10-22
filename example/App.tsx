@@ -101,7 +101,6 @@ export default function App() {
 					const encrypted = await Aes.encrypt(
 						new Int8Array(bytes),
 						key,
-						null,
 					);
 					console.log("Encrypted");
 					console.log(ua2b64(new Uint8Array(encrypted)));
@@ -110,7 +109,7 @@ export default function App() {
 					console.log(ua2b64(new Uint8Array(decrypted)));
 
 					const rawKey = await Aes.exportKey(key);
-					const loadedKey = await Aes.loadKey(rawKey, AesAlgorithm.AesCbcPkcs7);
+					const loadedKey = await Aes.loadKey(AesAlgorithm.AesCbcPkcs7, rawKey);
 
 					console.log("Raw key");
 					console.log(ua2b64(new Uint8Array(rawKey)));
@@ -131,19 +130,19 @@ export default function App() {
 								return;
 							}
 
-							if (rsaSignatureState.keyPair.algorithmIdentifier !== "PssWithSha256") {
-								Alert.alert("Algorithm not supported for signature", rsaSignatureState.keyPair.algorithmIdentifier);
+							if (rsaSignatureState.keyPair.algorithm !== "PssWithSha256") {
+								Alert.alert("Algorithm not supported for signature", rsaSignatureState.keyPair.algorithm);
 								return;
 							}
 
-							const signature = await Rsa.signature(
+							const signature = await Rsa.sign(
 								new Int8Array(bytes),
 								rsaSignatureState.keyPair,
 							);
 							console.log("Signature");
 							console.log(ua2b64(new Uint8Array(signature)));
 
-							const verified = await Rsa.verify(signature, new Int8Array(bytes), rsaSignatureState.keyPair);
+							const verified = await Rsa.verifySignature(signature, new Int8Array(bytes), rsaSignatureState.keyPair);
 							console.log("Verified");
 							console.log(verified);
 						}}
@@ -154,7 +153,7 @@ export default function App() {
 				<>
 					<Button
 						onPress={async () => {
-							const key = await Rsa.generateKey(RsaSignatureAlgorithm.PssWithSha256, 2048);
+							const key = await Rsa.generateKeyPair(RsaSignatureAlgorithm.PssWithSha256, 2048);
 							console.log("Got key");
 							console.log(key);
 
@@ -203,7 +202,7 @@ export default function App() {
 					{privateKeyJwk != undefined && (
 						<Button
 							onPress={async () => {
-								const key = await Rsa.importPrivateKeyJwk(privateKeyJwk!, rsaEncryptionState.keyPair.algorithmIdentifier);
+								const key = await Rsa.loadPrivateKeyJwk(privateKeyJwk!);
 								console.log("Imported JWK private key");
 								console.log(key);
 							}}
@@ -223,7 +222,7 @@ export default function App() {
 						<Button
 							onPress={async () => {
 								console.log(publicKeyJwk);
-								const key = await Rsa.importPublicKeyJwk(publicKeyJwk!, rsaEncryptionState.keyPair.algorithmIdentifier);
+								const key = await Rsa.loadPublicKeyJwk(publicKeyJwk!);
 								console.log("Imported JWK public key");
 								console.log(key);
 							}}
@@ -243,7 +242,7 @@ export default function App() {
 						<>
 							<Button
 								onPress={async () => {
-									const key = await Rsa.importPrivateKeyPkcs8(privateKeyPkcs8!, rsaEncryptionState.keyPair.algorithmIdentifier);
+									const key = await Rsa.loadPrivateKeyPkcs8(rsaEncryptionState.keyPair.algorithm, privateKeyPkcs8!);
 									console.log("Imported PKCS8 private key");
 									console.log(key);
 								}}
@@ -251,7 +250,7 @@ export default function App() {
 							/>
 							<Button
 								onPress={async () => {
-									const key = await Rsa.importKeyPair(privateKeyPkcs8, rsaEncryptionState.keyPair.algorithmIdentifier);
+									const key = await Rsa.loadKeyPairPkcs8(rsaEncryptionState.keyPair.algorithm, privateKeyPkcs8);
 									console.log("Imported key pair");
 									console.log(key);
 								}}
@@ -271,7 +270,7 @@ export default function App() {
 					{publicKeySpki != undefined && (
 						<Button
 							onPress={async () => {
-								const key = await Rsa.importPublicKeySpki(publicKeySpki!, rsaEncryptionState.keyPair.algorithmIdentifier);
+								const key = await Rsa.loadPublicKeySpki(rsaEncryptionState.keyPair.algorithm, publicKeySpki!);
 								console.log("Imported SPKI public key");
 								console.log(key);
 							}}
@@ -283,7 +282,7 @@ export default function App() {
 				<>
 					<Button
 						onPress={async () => {
-							const key = await Rsa.generateKey(RsaEncryptionAlgorithm.OaepWithSha256, 2048);
+							const key = await Rsa.generateKeyPair(RsaEncryptionAlgorithm.OaepWithSha256, 2048);
 							console.log("Got key");
 							console.log(key);
 
@@ -367,7 +366,7 @@ export default function App() {
 			<Button
 				onPress={async () => {
 					try {
-						await Rsa.generateKey("ThisAlgorithmDoesNotExist" as any, 2048)
+						await Rsa.generateKeyPair("ThisAlgorithmDoesNotExist" as any, 2048)
 						console.log("Success - this should not happen")
 					} catch (e) {
 						console.log("Failed to generate key (as expected)")

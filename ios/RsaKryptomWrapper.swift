@@ -97,8 +97,8 @@ public struct RsaKryptomWrapper {
         return mapPrivateKeyToDictionnary(privateKey: importedPrivateKey)
     }
     
-    static func importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) async throws -> [String: Any] {
-        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+    static func importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk) async throws -> [String: Any] {
+        let algorithm = try RsaAlgorithmCompanion.shared.fromJwkIdentifier(jwkIdentifier: privateKey.alg)
         let importedPrivateKey = try await rsa.loadPrivateKeyJwk(algorithm: algorithm, privateKeyJwk: privateKey.toPrivateRsaKeyJwk())
         
         return mapPrivateKeyToDictionnary(privateKey: importedPrivateKey)
@@ -111,8 +111,8 @@ public struct RsaKryptomWrapper {
         return mapPublicKeyToDictionnary(publicKey: importedPublicKey)
     }
     
-    static func importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) async throws -> [String: Any] {
-        let algorithm = try RsaAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+    static func importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk) async throws -> [String: Any] {
+        let algorithm = try RsaAlgorithmCompanion.shared.fromJwkIdentifier(jwkIdentifier: publicKey.alg)
         let importedPublicKey = try await rsa.loadPublicKeyJwk(algorithm: algorithm, publicKeyJwk: publicKey.toPublicRsaKeyJwk())
         
         return mapPublicKeyToDictionnary(publicKey: importedPublicKey)

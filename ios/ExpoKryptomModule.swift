@@ -64,16 +64,16 @@ public class ExpoKryptomModule: Module {
             return try await RsaKryptomWrapper.importPrivateKeyPkcs8(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPrivateKeyJwkRsa") { (privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.importPrivateKeyJwk(privateKey: privateKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPrivateKeyJwkRsa") { (privateKey: ExportPrivateRsaKeyJwk) in
+            return try await RsaKryptomWrapper.importPrivateKeyJwk(privateKey: privateKey)
         }
         
         AsyncFunction("importPublicKeySpkiRsa") { (publicKey: Data, algorithmIdentifier: String) in
             return try await RsaKryptomWrapper.importPublicKeySpki(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
         }
         
-        AsyncFunction("importPublicKeyJwkRsa") { (publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) in
-            return try await RsaKryptomWrapper.importPublicKeyJwk(publicKey: publicKey, algorithmIdentifier: algorithmIdentifier)
+        AsyncFunction("importPublicKeyJwkRsa") { (publicKey: ExportPublicRsaKeyJwk) in
+            return try await RsaKryptomWrapper.importPublicKeyJwk(publicKey: publicKey)
         }
         
         AsyncFunction("importKeyPairRsa") { (privateKey: Data, algorithmIdentifier: String) in

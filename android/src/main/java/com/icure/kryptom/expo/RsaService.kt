@@ -57,8 +57,8 @@ object RsaService {
         )
     ).toExport()
 
-    suspend fun importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk, algorithmIdentifier: String) = defaultCryptoService.rsa.loadPrivateKeyJwk(
-        algorithm = RsaAlgorithm.fromIdentifier(algorithmIdentifier),
+    suspend fun importPrivateKeyJwk(privateKey: ExportPrivateRsaKeyJwk) = defaultCryptoService.rsa.loadPrivateKeyJwk(
+        algorithm = RsaAlgorithm.fromJwkIdentifier(privateKey.alg),
         privateKeyJwk = privateKey.toPrivateRsaKeyJwk()
     ).let {
         mapOf(
@@ -67,8 +67,8 @@ object RsaService {
         )
     }
 
-    suspend fun importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk, algorithmIdentifier: String) = defaultCryptoService.rsa.loadPublicKeyJwk(
-        algorithm = RsaAlgorithm.fromIdentifier(algorithmIdentifier),
+    suspend fun importPublicKeyJwk(publicKey: ExportPublicRsaKeyJwk) = defaultCryptoService.rsa.loadPublicKeyJwk(
+        algorithm = RsaAlgorithm.fromJwkIdentifier(publicKey.alg),
         publicKeyJwk = publicKey.toPublicRsaKeyJwk()
     ).let {
         mapOf(

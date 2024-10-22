@@ -46,13 +46,13 @@ function checkDecryptedData(decrypted: Int8Array) {
 }
 
 export async function testExpoKryptom() {
-    const aesKey = await Aes.loadKey((b64_2ia(rawAesKey)), AesAlgorithm.AesCbcPkcs7)
+    const aesKey = await Aes.loadKey(AesAlgorithm.AesCbcPkcs7, b64_2ia(rawAesKey))
     checkDecryptedData(await Aes.decrypt((b64_2ia(aesEncryptedData)), aesKey))
-    const privateKeyDecrypt = await Rsa.importPrivateKeyPkcs8((b64_2ia(rsaKeyPrivate)), RsaEncryptionAlgorithm.OaepWithSha1)
+    const privateKeyDecrypt = await Rsa.loadPrivateKeyPkcs8(RsaEncryptionAlgorithm.OaepWithSha1, b64_2ia(rsaKeyPrivate))
     checkDecryptedData(await Rsa.decrypt((b64_2ia(rsaEncrypted)), privateKeyDecrypt))
-    const publicKeyVerify = await Rsa.importPublicKeySpki((b64_2ia(rsaKeyPublic)), RsaSignatureAlgorithm.PssWithSha256)
-    if (!await Rsa.verify((b64_2ia(rsaSigned)), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
-    const hmacKey = await Hmac.loadKey(b64_2ia(rawHmacKey), HmacAlgorithm.HmacSha512)
+    const publicKeyVerify = await Rsa.loadPublicKeySpki(RsaSignatureAlgorithm.PssWithSha256, b64_2ia(rsaKeyPublic))
+    if (!await Rsa.verifySignature((b64_2ia(rsaSigned)), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
+    const hmacKey = await Hmac.loadKey(HmacAlgorithm.HmacSha512, b64_2ia(rawHmacKey))
     if (!await Hmac.verify(b64_2ia(hmacSignature), dataBytes, hmacKey)) throw new Error("HMAC verification failed")
 }
 

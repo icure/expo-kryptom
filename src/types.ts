@@ -10,32 +10,33 @@ export enum RsaSignatureAlgorithm {
 }
 export type RsaAlgorithm = RsaEncryptionAlgorithm | RsaSignatureAlgorithm
 export enum HmacAlgorithm {
-  HmacSha512 = "HmacSha512"
+  HmacSha512 = "HmacSha512",
+  HmacSha256 = "HmacSha256"
 }
 
 export interface HmacKey {
-  algorithmIdentifier: HmacAlgorithm;
+  algorithm: HmacAlgorithm;
   key: unknown; // Actual type and format depends on the platform
 };
 
 export interface AesKey {
-  algorithmIdentifier: AesAlgorithm;
+  algorithm: AesAlgorithm;
   key: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaKeyPair {
-  algorithmIdentifier: RsaAlgorithm
+  algorithm: RsaAlgorithm
   privateKey: unknown; // Actual type and format depends on the platform
   publicKey: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaPrivateKey {
-  algorithmIdentifier: RsaAlgorithm
+  algorithm: RsaAlgorithm
   privateKey: unknown; // Actual type and format depends on the platform
 }
 
 export interface RsaPublicKey {
-  algorithmIdentifier: RsaAlgorithm
+  algorithm: RsaAlgorithm
   publicKey: unknown; // Actual type and format depends on the platform
 }
 
@@ -62,36 +63,36 @@ export type PublicRsaKeyJwk = {
 }
 
 export interface AesService {
-  generateKey(algorithmIdentifier: AesAlgorithm, size: number): Promise<AesKey>
-  encrypt(data: Int8Array, key: AesKey, iv: Int8Array | null): Promise<Int8Array>
+  generateKey(algorithm: AesAlgorithm, keySize: number): Promise<AesKey>
+  encrypt(data: Int8Array, key: AesKey, iv?: Int8Array): Promise<Int8Array>
   decrypt(ivAndEncryptedData: Int8Array, key: AesKey): Promise<Int8Array>
   exportKey(key: AesKey): Promise<Int8Array>
-  loadKey(rawKey: Int8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey>
+  loadKey(algorithm: AesAlgorithm, rawKey: Int8Array): Promise<AesKey>
 }
 
 export interface RsaService {
-  generateKey(algorithmIdentifier: RsaAlgorithm, size: number): Promise<RsaKeyPair>
+  generateKeyPair(algorithm: RsaAlgorithm, keySize: number): Promise<RsaKeyPair>
+  exportPrivateKeyPkcs8(key: RsaPrivateKey): Promise<Int8Array>
+  exportPublicKeySpki(key: RsaPublicKey): Promise<Int8Array>
+  loadKeyPairPkcs8(algorithm: RsaAlgorithm, privateKeyPkcs8: Int8Array): Promise<RsaKeyPair>
+  loadPrivateKeyPkcs8(algorithm: RsaAlgorithm, privateKeyPkcs8: Int8Array): Promise<RsaPrivateKey>
+  loadPublicKeySpki(algorithm: RsaAlgorithm, publicKeySpki: Int8Array): Promise<RsaPublicKey>
   encrypt(data: Int8Array, key: RsaPublicKey): Promise<Int8Array>
   decrypt(data: Int8Array, key: RsaPrivateKey): Promise<Int8Array>
-  signature(data: Int8Array, key: RsaPrivateKey): Promise<Int8Array>
-  verify(signature: Int8Array, data: Int8Array, key: RsaPublicKey): Promise<boolean>
-  exportPrivateKeyPkcs8(key: RsaPrivateKey): Promise<Int8Array>
+  sign(data: Int8Array, key: RsaPrivateKey): Promise<Int8Array>
+  verifySignature(signature: Int8Array, data: Int8Array, key: RsaPublicKey): Promise<boolean>
   exportPrivateKeyJwk(key: RsaPrivateKey): Promise<PrivateRsaKeyJwk>
-  exportPublicKeySpki(key: RsaPublicKey): Promise<Int8Array>
   exportPublicKeyJwk(key: RsaPublicKey): Promise<PublicRsaKeyJwk>
-  importPrivateKeyPkcs8(privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey>
-  importPrivateKeyJwk(privateKey: PrivateRsaKeyJwk, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey>
-  importPublicKeySpki(publicKeySpki: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey>
-  importPublicKeyJwk(publicKey: PublicRsaKeyJwk, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey>
-  importKeyPair(privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaKeyPair>
-};
+  loadPrivateKeyJwk(privateKeyJwk: PrivateRsaKeyJwk): Promise<RsaPrivateKey>
+  loadPublicKeyJwk(publicKeyJwk: PublicRsaKeyJwk): Promise<RsaPublicKey>
+}
 
 export interface HmacService {
-  generateKey(algorithmIdentifier: HmacAlgorithm): Promise<HmacKey>
+  generateKey(algorithm: HmacAlgorithm, keySize?: number): Promise<HmacKey>
+  exportKey(key: HmacKey): Promise<Int8Array>
+  loadKey(algorithm: HmacAlgorithm, bytes: Int8Array): Promise<HmacKey>
   sign(data: Int8Array, key: HmacKey): Promise<Int8Array>
   verify(signature: Int8Array, data: Int8Array, key: HmacKey): Promise<boolean>
-  exportKey(key: HmacKey): Promise<Int8Array>
-  loadKey(rawKey: Int8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey>
 }
 
 export interface StrongRandomService {
