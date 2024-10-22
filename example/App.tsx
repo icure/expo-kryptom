@@ -85,8 +85,8 @@ export default function App() {
 
 	const [privateKeyJwk, setPrivateKeyJwk] = useState<PrivateRsaKeyJwk | undefined>(undefined);
 	const [publicKeyJwk, setPublicKeyJwk] = useState<PublicRsaKeyJwk | undefined>(undefined);
-	const [privateKeyPkcs8, setPrivateKeyPkcs8] = useState<Uint8Array | undefined>(undefined);
-	const [publicKeySpki, setPublicKeySpki] = useState<Uint8Array | undefined>(undefined);
+	const [privateKeyPkcs8, setPrivateKeyPkcs8] = useState<Int8Array | undefined>(undefined);
+	const [publicKeySpki, setPublicKeySpki] = useState<Int8Array | undefined>(undefined);
 
 	const [hmacState, hmacDispatch] = useReducer(hmacReducer, {status: 'NOT_INITIALIZED'} as HmacState);
 
@@ -99,15 +99,25 @@ export default function App() {
 					console.log("Got key");
 					console.log(JSON.stringify(key));
 					const encrypted = await Aes.encrypt(
-						new Uint8Array(bytes),
+						new Int8Array(bytes),
 						key,
 						null,
 					);
 					console.log("Encrypted");
-					console.log(ua2b64(encrypted));
+					console.log(ua2b64(new Uint8Array(encrypted)));
 					const decrypted = await Aes.decrypt(encrypted, key);
 					console.log("Decrypted");
-					console.log(ua2b64(decrypted));
+					console.log(ua2b64(new Uint8Array(decrypted)));
+
+					const rawKey = await Aes.exportKey(key);
+					const loadedKey = await Aes.loadKey(rawKey, AesAlgorithm.AesCbcPkcs7);
+
+					console.log("Raw key");
+					console.log(ua2b64(new Uint8Array(rawKey)));
+
+					console.log("Loaded key");
+					console.log(JSON.stringify(loadedKey));
+
 				}}
 				title="AES Encrypt then decrypt"
 			/>
@@ -127,13 +137,13 @@ export default function App() {
 							}
 
 							const signature = await Rsa.signature(
-								new Uint8Array(bytes),
+								new Int8Array(bytes),
 								rsaSignatureState.keyPair,
 							);
 							console.log("Signature");
-							console.log(ua2b64(signature));
+							console.log(ua2b64(new Uint8Array(signature)));
 
-							const verified = await Rsa.verify(signature, new Uint8Array(bytes), rsaSignatureState.keyPair);
+							const verified = await Rsa.verify(signature, new Int8Array(bytes), rsaSignatureState.keyPair);
 							console.log("Verified");
 							console.log(verified);
 						}}
@@ -169,15 +179,15 @@ export default function App() {
 							}
 
 							const encrypted = await Rsa.encrypt(
-								new Uint8Array(bytes),
+								new Int8Array(bytes),
 								rsaEncryptionState.keyPair,
 							);
 							console.log("Encrypted");
-							console.log(ua2b64(encrypted));
+							console.log(ua2b64(new Uint8Array(encrypted)));
 
 							const decrypted = await Rsa.decrypt(encrypted, rsaEncryptionState.keyPair);
 							console.log("Decrypted");
-							console.log(ua2b64(decrypted));
+							console.log(ua2b64(new Uint8Array(decrypted)));
 						}}
 						title="RSA Encrypt then decrypt"
 					/>
@@ -297,15 +307,15 @@ export default function App() {
 							}
 
 							const signature = await Hmac.sign(
-								new Uint8Array(bytes),
+								new Int8Array(bytes),
 								hmacState.keydata
 							);
 							console.log("Signature");
-							console.log(ua2b64(signature));
+							console.log(ua2b64(new Uint8Array(signature)));
 
 							const verified = await Hmac.verify(
 								signature,
-								new Uint8Array(bytes),
+								new Int8Array(bytes),
 								hmacState.keydata
 							);
 							console.log("Verified");
@@ -332,9 +342,9 @@ export default function App() {
 			)}
 			<Button
 				onPress={async () => {
-					const digest = await Digest.sha256(new Uint8Array(bytes));
+					const digest = await Digest.sha256(new Int8Array(bytes));
 					console.log("Sha256");
-					console.log(ua2b64(digest));
+					console.log(ua2b64(new Uint8Array(digest)));
 				}}
 				title="Sha256"
 			/>
@@ -342,7 +352,7 @@ export default function App() {
 				onPress={() => {
 					const random = StrongRandom.randomBytes(10);
 					console.log("Random bytes");
-					console.log(ua2b64(random));
+					console.log(ua2b64(new Uint8Array(random)));
 				}}
 				title="10 random byes"
 			/>

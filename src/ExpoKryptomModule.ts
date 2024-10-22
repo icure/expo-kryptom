@@ -25,18 +25,23 @@ const rsaKeyNeedsExport = ExpoKryptomModule.rsaKeyNeedsExport;
 
 export const Aes : AesService = {
   generateKey: async (algorithmIdentifier: AesAlgorithm, size: number): Promise<AesKey> => {
-    return await ExpoKryptomModule.generateKeyAes(algorithmIdentifier,size);
+    const aesKey = await ExpoKryptomModule.generateKeyAes(algorithmIdentifier,size)
+
+    return {
+        key: new Int8Array(aesKey.key),
+        algorithmIdentifier: aesKey.algorithmIdentifier
+    }
   },
-  encrypt: async (data: Uint8Array, key: AesKey, iv: Uint8Array | null): Promise<Uint8Array> => {
-    return await ExpoKryptomModule.encryptAes(data, (key as NativeAesKey).key, key.algorithmIdentifier, iv);
+  encrypt: async (data: Int8Array, key: AesKey, iv: Int8Array | null): Promise<Int8Array> => {
+    return new Int8Array(await ExpoKryptomModule.encryptAes(new Uint8Array(data), new Uint8Array((key as NativeAesKey).key), key.algorithmIdentifier, iv ? new Uint8Array(iv) : null));
   },
-  decrypt: async (ivAndEncryptedData: Uint8Array, key: AesKey): Promise<Uint8Array> => {
-    return await ExpoKryptomModule.decryptAes(ivAndEncryptedData, (key as NativeAesKey).key, key.algorithmIdentifier);
+  decrypt: async (ivAndEncryptedData: Int8Array, key: AesKey): Promise<Int8Array> => {
+    return new Int8Array(await ExpoKryptomModule.decryptAes(new Uint8Array(ivAndEncryptedData), new Uint8Array((key as NativeAesKey).key), key.algorithmIdentifier));
   },
-  exportRawKey: async (key: AesKey): Promise<Uint8Array> => {
-    return (key as NativeAesKey).key;
+  exportKey: async (key: AesKey): Promise<Int8Array> => {
+    return new Int8Array(await ExpoKryptomModule.exportKeyAes(new Uint8Array(key.key as Int8Array), key.algorithmIdentifier));
   },
-  importRawKey: async (rawKey: Uint8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey> => {
+  loadKey: async (rawKey: Int8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey> => {
     // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeAesKey = {
       key: rawKey,
@@ -50,53 +55,65 @@ export const Rsa: RsaService = {
   generateKey: async (algorithmIdentifier: string, size: number) => {
     return await ExpoKryptomModule.generateKeyRsa(algorithmIdentifier, size) as RsaKeyPair;
   },
-  encrypt: async (data: Uint8Array, key: RsaPublicKey) => {
-    return await ExpoKryptomModule.encryptRsa(
-      data,
-      (key as NativeRsaPublicKey).publicKey,
-      key.algorithmIdentifier
-    ) as Uint8Array;
+  encrypt: async (data: Int8Array, key: RsaPublicKey) => {
+    return new Int8Array(
+        await ExpoKryptomModule.encryptRsa(
+            new Uint8Array(data),
+            new Uint8Array((key as NativeRsaPublicKey).publicKey),
+            key.algorithmIdentifier
+        )
+    );
   },
-  decrypt: async (data: Uint8Array, key: RsaPrivateKey) => {
-    return await ExpoKryptomModule.decryptRsa(
-      data,
-      (key as NativeRsaPrivateKey).privateKey,
-      key.algorithmIdentifier
-    ) as Uint8Array;
+  decrypt: async (data: Int8Array, key: RsaPrivateKey) => {
+    return new Int8Array(
+        await ExpoKryptomModule.decryptRsa(
+            new Uint8Array(data),
+            new Uint8Array((key as NativeRsaPrivateKey).privateKey),
+            key.algorithmIdentifier
+        )
+    );
   },
   exportPrivateKeyPkcs8: async (key: RsaPrivateKey) => {
     if (rsaKeyNeedsExport) {
-      return await ExpoKryptomModule.exportPrivateKeyPkcs8Rsa(
-        (key as NativeRsaPrivateKey).privateKey,
-        key.algorithmIdentifier
-      ) as Uint8Array;
+      return new Int8Array(
+          await ExpoKryptomModule.exportPrivateKeyPkcs8Rsa(
+              new Uint8Array((key as NativeRsaPrivateKey).privateKey),
+              key.algorithmIdentifier
+          )
+      );
     }
     return (key as NativeRsaPrivateKey).privateKey;
   },
   exportPrivateKeyJwk: async (key: RsaPrivateKey) => {
     return await ExpoKryptomModule.exportPrivateKeyJwkRsa(
-      (key as NativeRsaPrivateKey).privateKey,
+      new Uint8Array((key as NativeRsaPrivateKey).privateKey),
       key.algorithmIdentifier
     ) as PrivateRsaKeyJwk;
   },
   exportPublicKeySpki: async (key: RsaPublicKey) => {
     if (rsaKeyNeedsExport) {
-      return await ExpoKryptomModule.exportPublicKeySpkiRsa(
-        (key as NativeRsaPublicKey).publicKey,
-        key.algorithmIdentifier
-      ) as Uint8Array;
+      return new Int8Array(
+          await ExpoKryptomModule.exportPublicKeySpkiRsa(
+              new Uint8Array((key as NativeRsaPublicKey).publicKey),
+              key.algorithmIdentifier
+          )
+      );
     }
     return (key as NativeRsaPublicKey).publicKey;
   },
   exportPublicKeyJwk: async (key: RsaPublicKey) => {
     return await ExpoKryptomModule.exportPublicKeyJwkRsa(
-      (key as NativeRsaPublicKey).publicKey,
+      new Uint8Array((key as NativeRsaPublicKey).publicKey),
       key.algorithmIdentifier
     ) as PublicRsaKeyJwk;
   },
-  importPrivateKeyPkcs8: async (privateKeyPkcs8: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey> => {
+  importPrivateKeyPkcs8: async (privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey> => {
     if (rsaKeyNeedsExport) {
-      return await ExpoKryptomModule.importPrivateKeyPkcs8Rsa(privateKeyPkcs8, algorithmIdentifier);
+      const privateKey = await ExpoKryptomModule.importPrivateKeyPkcs8Rsa(new Uint8Array(privateKeyPkcs8), algorithmIdentifier)
+      return {
+        privateKey: new Int8Array(privateKey.privateKey),
+        algorithmIdentifier: privateKey.algorithmIdentifier
+      } satisfies RsaPrivateKey;
     }
     // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeRsaPrivateKey = {
@@ -106,11 +123,20 @@ export const Rsa: RsaService = {
     return res;
   },
   importPrivateKeyJwk: async (privateKey: PrivateRsaKeyJwk, algorithmIdentifier: RsaAlgorithm) => {
-    return await ExpoKryptomModule.importPrivateKeyJwkRsa(privateKey, algorithmIdentifier) as RsaPrivateKey;
+    const importedPrivateKey = await ExpoKryptomModule.importPrivateKeyJwkRsa(privateKey, algorithmIdentifier)
+    return {
+      privateKey: new Int8Array(importedPrivateKey.privateKey),
+      algorithmIdentifier: importedPrivateKey.algorithmIdentifier
+    } satisfies RsaPrivateKey;
   },
-  importPublicKeySpki: async (publicKeySpki: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey> => {
+  importPublicKeySpki: async (publicKeySpki: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey> => {
     if (rsaKeyNeedsExport) {
-      return await ExpoKryptomModule.importPublicKeySpkiRsa(publicKeySpki, algorithmIdentifier);
+      const publicKey = await ExpoKryptomModule.importPublicKeySpkiRsa(new Uint8Array(publicKeySpki), algorithmIdentifier)
+      console.log(publicKey)
+      return {
+        publicKey: new Int8Array(publicKey.publicKey),
+        algorithmIdentifier: publicKey.algorithmIdentifier
+      } satisfies NativeRsaPublicKey
     }
     // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeRsaPublicKey = {
@@ -120,33 +146,46 @@ export const Rsa: RsaService = {
     return res;
   },
   importPublicKeyJwk: async (publicKey: PublicRsaKeyJwk, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey> => {
-    return await ExpoKryptomModule.importPublicKeyJwkRsa(publicKey, algorithmIdentifier);
+    const importedPublicKey = await ExpoKryptomModule.importPublicKeyJwkRsa(publicKey, algorithmIdentifier);
+    return {
+        publicKey: new Int8Array(importedPublicKey.publicKey),
+        algorithmIdentifier: importedPublicKey.algorithmIdentifier
+      } satisfies NativeRsaPublicKey;
   },
-  importKeyPair: async (privateKeyPkcs8: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaKeyPair> => {
-    return await ExpoKryptomModule.importKeyPairRsa(privateKeyPkcs8, algorithmIdentifier);
+  importKeyPair: async (privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaKeyPair> => {
+    const importedKeyPair = await ExpoKryptomModule.importKeyPairRsa(new Uint8Array(privateKeyPkcs8), algorithmIdentifier);
+    return {
+      publicKey: new Int8Array(importedKeyPair.publicKey),
+        privateKey: new Int8Array(importedKeyPair.privateKey),
+        algorithmIdentifier: importedKeyPair.algorithmIdentifier
+    } satisfies NativeRsaKeyPair;
   },
-  signature: async (data: Uint8Array, key: RsaPrivateKey): Promise<Uint8Array> => {
-    return await ExpoKryptomModule.signatureRsa(data, (key as NativeRsaPrivateKey).privateKey, key.algorithmIdentifier);
+  signature: async (data: Int8Array, key: RsaPrivateKey): Promise<Int8Array> => {
+    return new Int8Array(await ExpoKryptomModule.signatureRsa(new Uint8Array(data), new Uint8Array((key as NativeRsaPrivateKey).privateKey), key.algorithmIdentifier));
   },
-  verify: async (signature: Uint8Array, data: Uint8Array, key: RsaPublicKey): Promise<boolean> => {
-    return await ExpoKryptomModule.verifyRsa(signature, data, (key as NativeRsaPublicKey).publicKey, key.algorithmIdentifier);
+  verify: async (signature: Int8Array, data: Int8Array, key: RsaPublicKey): Promise<boolean> => {
+    return await ExpoKryptomModule.verifyRsa(new Uint8Array(signature), new Uint8Array(data), new Uint8Array((key as NativeRsaPublicKey).publicKey), key.algorithmIdentifier);
   },
 };
 
 export const Hmac: HmacService = {
   generateKey: async (algorithmIdentifier: HmacAlgorithm): Promise<HmacKey> => {
-    return await ExpoKryptomModule.generateKeyHmac(algorithmIdentifier)
+    const hmacKey = await ExpoKryptomModule.generateKeyHmac(algorithmIdentifier)
+    return {
+        key: new Int8Array(hmacKey.key),
+        algorithmIdentifier: hmacKey.algorithmIdentifier
+    }
   },
-  sign: async (data: Uint8Array, key: HmacKey): Promise<Uint8Array> => {
-    return await ExpoKryptomModule.signHmac(key.algorithmIdentifier, (key as NativeHmacKey).key, data)
+  sign: async (data: Int8Array, key: HmacKey): Promise<Int8Array> => {
+    return new Int8Array(await ExpoKryptomModule.signHmac(key.algorithmIdentifier, new Uint8Array((key as NativeHmacKey).key), new Uint8Array(data)));
   },
-  verify: async (signature: Uint8Array, data: Uint8Array, key: HmacKey): Promise<boolean> => {
-    return await ExpoKryptomModule.verifyHmac(key.algorithmIdentifier, (key as NativeHmacKey).key, signature, data)
+  verify: async (signature: Int8Array, data: Int8Array, key: HmacKey): Promise<boolean> => {
+    return await ExpoKryptomModule.verifyHmac(key.algorithmIdentifier, new Uint8Array((key as NativeHmacKey).key), new Uint8Array(signature), new Uint8Array(data))
   },
-  exportRawKey: async (key: HmacKey): Promise<Uint8Array> => {
+  exportKey: async (key: HmacKey): Promise<Int8Array> => {
     return (key as NativeHmacKey).key;
   },
-  importRawKey: async (rawKey: Uint8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey> => {
+  loadKey: async (rawKey: Int8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey> => {
     // TODO: note that if algorithm is invalid the user will get an error only when first using the key to encrypt/decrypt
     const res: NativeHmacKey = {
       key: rawKey,
@@ -158,7 +197,7 @@ export const Hmac: HmacService = {
 
 export const StrongRandom : StrongRandomService = {
   randomBytes: (length: number) => {
-    return ExpoKryptomModule.randomBytes(length) as Uint8Array;
+    return new Int8Array(ExpoKryptomModule.randomBytes(length));
   },
   randomUUID: () => {
     return ExpoKryptomModule.randomUUID() as string;
@@ -166,28 +205,28 @@ export const StrongRandom : StrongRandomService = {
 }
 
 export const Digest : DigestService = {
-  sha256: async (data: Uint8Array) => {
-    return await ExpoKryptomModule.sha256(data) as Uint8Array;
+  sha256: async (data: Int8Array) => {
+    return new Int8Array(await ExpoKryptomModule.sha256(new Uint8Array(data)))
   },
 }
 
 interface NativeRsaKeyPair extends RsaKeyPair {
-  publicKey: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
-  privateKey: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
+  publicKey: Int8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
+  privateKey: Int8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
 }
 
 interface NativeRsaPrivateKey extends RsaPrivateKey {
-  privateKey: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
+  privateKey: Int8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in SPKI format
 }
 
 interface NativeRsaPublicKey extends RsaPublicKey {
-  publicKey: Uint8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
+  publicKey: Int8Array; // If `rsaKeyNeedsExport` is true, this is the public key in some implementation-dependent format, if false this is the key in PKCS8 format
 }
 
 interface NativeAesKey extends AesKey {
-  key: Uint8Array; // Representation of the key as raw bytes
+  key: Int8Array; // Representation of the key as raw bytes
 }
 
 interface NativeHmacKey extends HmacKey {
-  key: Uint8Array; // Representation of the key as raw bytes
+  key: Int8Array; // Representation of the key as raw bytes
 }

@@ -63,42 +63,42 @@ export type PublicRsaKeyJwk = {
 
 export interface AesService {
   generateKey(algorithmIdentifier: AesAlgorithm, size: number): Promise<AesKey>
-  encrypt(data: Uint8Array, key: AesKey, iv: Uint8Array | null): Promise<Uint8Array>
-  decrypt(ivAndEncryptedData: Uint8Array, key: AesKey): Promise<Uint8Array>
-  exportRawKey(key: AesKey): Promise<Uint8Array>
-  importRawKey(rawKey: Uint8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey>
+  encrypt(data: Int8Array, key: AesKey, iv: Int8Array | null): Promise<Int8Array>
+  decrypt(ivAndEncryptedData: Int8Array, key: AesKey): Promise<Int8Array>
+  exportKey(key: AesKey): Promise<Int8Array>
+  loadKey(rawKey: Int8Array, algorithmIdentifier: AesAlgorithm): Promise<AesKey>
 }
 
 export interface RsaService {
   generateKey(algorithmIdentifier: RsaAlgorithm, size: number): Promise<RsaKeyPair>
-  encrypt(data: Uint8Array, key: RsaPublicKey): Promise<Uint8Array>
-  decrypt(data: Uint8Array, key: RsaPrivateKey): Promise<Uint8Array>
-  signature(data: Uint8Array, key: RsaPrivateKey): Promise<Uint8Array>
-  verify(signature: Uint8Array, data: Uint8Array, key: RsaPublicKey): Promise<boolean>
-  exportPrivateKeyPkcs8(key: RsaPrivateKey): Promise<Uint8Array>
+  encrypt(data: Int8Array, key: RsaPublicKey): Promise<Int8Array>
+  decrypt(data: Int8Array, key: RsaPrivateKey): Promise<Int8Array>
+  signature(data: Int8Array, key: RsaPrivateKey): Promise<Int8Array>
+  verify(signature: Int8Array, data: Int8Array, key: RsaPublicKey): Promise<boolean>
+  exportPrivateKeyPkcs8(key: RsaPrivateKey): Promise<Int8Array>
   exportPrivateKeyJwk(key: RsaPrivateKey): Promise<PrivateRsaKeyJwk>
-  exportPublicKeySpki(key: RsaPublicKey): Promise<Uint8Array>
+  exportPublicKeySpki(key: RsaPublicKey): Promise<Int8Array>
   exportPublicKeyJwk(key: RsaPublicKey): Promise<PublicRsaKeyJwk>
-  importPrivateKeyPkcs8(privateKeyPkcs8: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey>
+  importPrivateKeyPkcs8(privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey>
   importPrivateKeyJwk(privateKey: PrivateRsaKeyJwk, algorithmIdentifier: RsaAlgorithm): Promise<RsaPrivateKey>
-  importPublicKeySpki(publicKeySpki: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey>
+  importPublicKeySpki(publicKeySpki: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey>
   importPublicKeyJwk(publicKey: PublicRsaKeyJwk, algorithmIdentifier: RsaAlgorithm): Promise<RsaPublicKey>
-  importKeyPair(privateKeyPkcs8: Uint8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaKeyPair>
+  importKeyPair(privateKeyPkcs8: Int8Array, algorithmIdentifier: RsaAlgorithm): Promise<RsaKeyPair>
 };
 
 export interface HmacService {
   generateKey(algorithmIdentifier: HmacAlgorithm): Promise<HmacKey>
-  sign(data: Uint8Array, key: HmacKey): Promise<Uint8Array>
-  verify(signature: Uint8Array, data: Uint8Array, key: HmacKey): Promise<boolean>
-  exportRawKey(key: HmacKey): Promise<Uint8Array>
-  importRawKey(rawKey: Uint8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey>
+  sign(data: Int8Array, key: HmacKey): Promise<Int8Array>
+  verify(signature: Int8Array, data: Int8Array, key: HmacKey): Promise<boolean>
+  exportKey(key: HmacKey): Promise<Int8Array>
+  loadKey(rawKey: Int8Array, algorithmIdentifier: HmacAlgorithm): Promise<HmacKey>
 }
 
 export interface StrongRandomService {
-  randomBytes(length: number): Uint8Array
+  randomBytes(length: number): Int8Array
   randomUUID(): string
 }
 
 export interface DigestService {
-  sha256(data: Uint8Array): Promise<Uint8Array>
+  sha256(data: Int8Array): Promise<Int8Array>
 }

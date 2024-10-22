@@ -28,10 +28,8 @@ public struct AesKryptomWrapper {
     
     static func encrypt(data: Data, key: Data, algorithmIdentifier: String, iv: Data?) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(data)
-        let kRawKey = NSDataUtilsKt.toByteArray(key)
-        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let kKey = try key.toAesKey(algorithmIdentifier: algorithmIdentifier)
         let kIv = iv.flatMap { NSDataUtilsKt.toByteArray($0) }
-        let kKey = AesKey(rawKey: kRawKey, algorithm: algorithm)
         let encryptedData = try await aes.encrypt(data: kData, key: kKey.dropTypeInfo(), iv: kIv)
         
         return encryptedData.toNSData()
@@ -39,9 +37,7 @@ public struct AesKryptomWrapper {
     
     static func decrypt(ivAndEncryptedData: Data, key: Data, algorithmIdentifier: String) async throws -> Data {
         let kData = NSDataUtilsKt.toByteArray(ivAndEncryptedData)
-        let kRawKey = NSDataUtilsKt.toByteArray(key)
-        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
-        let kKey = AesKey(rawKey: kRawKey, algorithm: algorithm)
+        let kKey = try key.toAesKey(algorithmIdentifier: algorithmIdentifier)
         let decryptedData = try await aes.decrypt(ivAndEncryptedData: kData, key: kKey.dropTypeInfo())
         
         return decryptedData.toNSData()
@@ -52,5 +48,19 @@ public struct AesKryptomWrapper {
             "key": key.rawKey.toNSData(),
             "algorithmIdentifier": key.algorithm.identifier
         ]
+    }
+    
+    static func exportKey(key: Data, algorithmIdentifier: String) async throws -> Data {
+        let exportedKey = try await aes.exportKey(key: key.toAesKey(algorithmIdentifier: algorithmIdentifier).dropTypeInfo())
+        return exportedKey.toNSData()
+    }
+}
+
+fileprivate extension Data {
+    func toAesKey(algorithmIdentifier: String) throws -> AesKey<any AesAlgorithm> {
+        let kRawKey = NSDataUtilsKt.toByteArray(self)
+        let algorithm = try AesAlgorithmCompanion.shared.fromIdentifier(identifier: algorithmIdentifier)
+        let kKey = AesKey(rawKey: kRawKey, algorithm: algorithm)
+        return kKey
     }
 }
