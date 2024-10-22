@@ -24,8 +24,8 @@ const ExpoKryptomModule = requireNativeModule("ExpoKryptom");
 const rsaKeyNeedsExport = ExpoKryptomModule.rsaKeyNeedsExport;
 
 export const Aes : AesService = {
-  generateKey: async (algorithmIdentifier: AesAlgorithm, size: number): Promise<AesKey> => {
-    const aesKey = await ExpoKryptomModule.generateKeyAes(algorithmIdentifier,size)
+  generateKey: async (algorithm: AesAlgorithm, size: number): Promise<AesKey> => {
+    const aesKey = await ExpoKryptomModule.generateKeyAes(algorithm, size)
 
     return {
         key: new Int8Array(aesKey.key),
