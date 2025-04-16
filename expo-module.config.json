@@ -1,11 +1,17 @@
 {
-  "platforms": ["ios", "android", "web"],
-  "ios": {
+  "platforms": [
+    "apple",
+    "android",
+    "web"
+  ],
+  "apple": {
     "modules": [
       "ExpoKryptomModule"
     ]
   },
   "android": {
-    "modules": ["com.icure.kryptom.expo.ExpoKryptomModule"]
+    "modules": [
+      "com.icure.kryptom.expo.ExpoKryptomModule"
+    ]
   }
 }
