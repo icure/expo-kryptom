@@ -138,6 +138,10 @@ class ExpoKryptomModule : Module() {
       DigestService.sha256(data)
     }
 
+    AsyncFunction("sha512") Coroutine { data: ByteArray ->
+      DigestService.sha512(data)
+    }
+
     Function("randomBytes") { length: Int ->
       StrongRandom.randomBytes(length)
     }
