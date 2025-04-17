@@ -13,7 +13,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (14.0.3):
     - ExpoModulesCore
-  - ExpoKryptom (1.3.1):
+  - ExpoKryptom (1.4.0):
     - ExpoModulesCore
   - ExpoModulesCore (2.2.3):
     - DoubleConversion
@@ -1834,7 +1834,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: c8c19bf80d914c83dda3beb8569d7fb603be0970
   ExpoFont: 773955186469acc5108ff569712a2d243857475f
   ExpoKeepAwake: 2a5f15dd4964cba8002c9a36676319a3394c85c7
-  ExpoKryptom: 5788abfbadcb75e7863d6144546d62c644be4389
+  ExpoKryptom: 7d121b375611776aafd620b52041a04558efcf82
   ExpoModulesCore: dd965804a882f1dbb6036fceea4d912461aeaa0d
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 7605ea4810e0e10ae4815292433c09bf4324ba45

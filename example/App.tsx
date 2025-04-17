@@ -348,6 +348,14 @@ export default function App() {
 				title="Sha256"
 			/>
 			<Button
+				onPress={async () => {
+					const digest = await Digest.sha512((bytes));
+					console.log("Sha512");
+					console.log(ua2b64(new Uint8Array(digest)));
+				}}
+				title="Sha512"
+			/>
+			<Button
 				onPress={() => {
 					const random = StrongRandom.randomBytes(10);
 					console.log("Random bytes");
