@@ -1,17 +1,17 @@
 // @ts-ignore
-import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
-import { StrongRandom } from './ExpoKryptomModule';
+import {polyfillGlobal} from 'react-native/Libraries/Utilities/PolyfillFunctions';
+import {StrongRandom} from './ExpoKryptomModule';
 
 const strongRandomCrypto = {
-  getRandomValues: (array: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | BigInt64Array | BigUint64Array) => {
-    const randomBytes: Int8Array = StrongRandom.randomBytes(array.byteLength);
-    const toSet = new Uint8Array(array.buffer);
-    toSet.set(randomBytes);
-    return array;
-  },
-  randomUUID: () => {
-    return StrongRandom.randomUUID()
-  }
+	getRandomValues: (array: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | BigInt64Array | BigUint64Array) => {
+		const randomBytes: Uint8Array = StrongRandom.randomBytes(array.byteLength);
+		const toSet = new Uint8Array(array.buffer);
+		toSet.set(randomBytes);
+		return array;
+	},
+	randomUUID: () => {
+		return StrongRandom.randomUUID()
+	}
 } as Crypto
 
 /**
@@ -20,7 +20,7 @@ const strongRandomCrypto = {
  * No other methods are supported.
  */
 export function polyfillWindowCryptoWithStrongRandom() {
-  (window as any).crypto = strongRandomCrypto;
+	(window as any).crypto = strongRandomCrypto;
 }
 
 /**
@@ -29,5 +29,5 @@ export function polyfillWindowCryptoWithStrongRandom() {
  * No other methods are supported.
  */
 export function polyfillGlobalCryptoWithStrongRandom() {
-  polyfillGlobal('crypto', () => strongRandomCrypto);
+	polyfillGlobal('crypto', () => strongRandomCrypto);
 }

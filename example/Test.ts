@@ -2,7 +2,7 @@ import { Aes, Hmac, Rsa, AesAlgorithm, RsaEncryptionAlgorithm, RsaSignatureAlgor
 import { Buffer } from "buffer"
 
 const data = "The quick brown fox jumps over the lazy dog"
-const dataBytes = new Int8Array(Buffer.from(data, "utf-8"))
+const dataBytes = new Uint8Array(Buffer.from(data, "utf-8"))
 const rawAesKey = "vNImq6i5ff6Y8UhhqhyGWw=="
 const aesEncryptedData = "Yfp9eibllZVoVBaznalQ8F6jQtE/BTBI9cwVAvu0ZV3TqJhbOkCf1YIW1P21Gekl5hPN5uSE9Uj5LSWT7cp83Q=="
 const rsaKeyPrivate = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRwnz+NTVzKu7mPhVqLMT6clQG/FZAkv7ATpfbGZpjsuIRj/8ZU3a9oXmIH4f0" +
@@ -36,23 +36,23 @@ const rawHmacKey = "E8Kij04n2hg/j3y/d7M8RRmQLQHA+oCR7Uldec/f+kZH17nE0i7haenaM8tF
     "cTtfImZZD67uaIt30UkoMUQqOb62oR3cQ/fdWgIZTMk811HfE91UweqfalT6kAg5yh5wTc+xY5FGkLk="
 const hmacSignature = "mCU9EWH5nXV58sDhUGfKYT45UGU5D3LyTtmsVqcobnbui2cg2e/muzegtDR3x5amAyb+4tpXXXPh/3M7ngblZA=="
 
-function b64_2ia(b64: string) {
-    return new Int8Array(Buffer.from(b64, "base64"));
+function b64_2ua(b64: string) {
+    return new Uint8Array(Buffer.from(b64, "base64"));
 }  
 
-function checkDecryptedData(decrypted: Int8Array) {
+function checkDecryptedData(decrypted: Uint8Array) {
     const decryptedDataString = Buffer.from(decrypted).toString("utf-8")
     if (decryptedDataString != data) throw new Error("Decrypted data is not the same as the original data")
 }
 
 export async function testExpoKryptom() {
-    const aesKey = await Aes.loadKey(AesAlgorithm.AesCbcPkcs7, b64_2ia(rawAesKey))
-    checkDecryptedData(await Aes.decrypt((b64_2ia(aesEncryptedData)), aesKey))
-    const privateKeyDecrypt = await Rsa.loadPrivateKeyPkcs8(RsaEncryptionAlgorithm.OaepWithSha1, b64_2ia(rsaKeyPrivate))
-    checkDecryptedData(await Rsa.decrypt((b64_2ia(rsaEncrypted)), privateKeyDecrypt))
-    const publicKeyVerify = await Rsa.loadPublicKeySpki(RsaSignatureAlgorithm.PssWithSha256, b64_2ia(rsaKeyPublic))
-    if (!await Rsa.verifySignature((b64_2ia(rsaSigned)), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
-    const hmacKey = await Hmac.loadKey(HmacAlgorithm.HmacSha512, b64_2ia(rawHmacKey))
-    if (!await Hmac.verify(b64_2ia(hmacSignature), dataBytes, hmacKey)) throw new Error("HMAC verification failed")
+    const aesKey = await Aes.loadKey(AesAlgorithm.AesCbcPkcs7, b64_2ua(rawAesKey))
+    checkDecryptedData(await Aes.decrypt((b64_2ua(aesEncryptedData)), aesKey))
+    const privateKeyDecrypt = await Rsa.loadPrivateKeyPkcs8(RsaEncryptionAlgorithm.OaepWithSha1, b64_2ua(rsaKeyPrivate))
+    checkDecryptedData(await Rsa.decrypt((b64_2ua(rsaEncrypted)), privateKeyDecrypt))
+    const publicKeyVerify = await Rsa.loadPublicKeySpki(RsaSignatureAlgorithm.PssWithSha256, b64_2ua(rsaKeyPublic))
+    if (!await Rsa.verifySignature((b64_2ua(rsaSigned)), dataBytes, publicKeyVerify)) throw new Error("Signature verification failed")
+    const hmacKey = await Hmac.loadKey(HmacAlgorithm.HmacSha512, b64_2ua(rawHmacKey))
+    if (!await Hmac.verify(b64_2ua(hmacSignature), dataBytes, hmacKey)) throw new Error("HMAC verification failed")
 }
 

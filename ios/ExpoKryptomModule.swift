@@ -104,6 +104,10 @@ public class ExpoKryptomModule: Module {
             return try await DigestKryptomWrapper.sha256(data: data)
         }
         
+        AsyncFunction("sha512") { (data: Data) in
+            return try await DigestKryptomWrapper.sha512(data: data)
+        }
+        
         Function("randomUUID") { () in
             return StrongRandomKryptomWrapper.randomUUID()
         }
