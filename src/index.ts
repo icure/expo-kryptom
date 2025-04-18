@@ -1,7 +1,5 @@
 // Import the native module. On web, it will be resolved to ExpoKryptom.web.ts
 
-import { StrongRandom } from './ExpoKryptomModule';
-
 // and on native platforms to ExpoKryptom.ts
 export { 
   AesAlgorithm, 
